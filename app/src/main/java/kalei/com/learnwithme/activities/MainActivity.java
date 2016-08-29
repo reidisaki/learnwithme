@@ -1,10 +1,12 @@
 package kalei.com.learnwithme.activities;
 
 import com.crashlytics.android.Crashlytics;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.fabric.sdk.android.Fabric;
+import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 
 public class MainActivity extends LearnWithMeActivity {
@@ -73,34 +76,43 @@ public class MainActivity extends LearnWithMeActivity {
 
     private InterstitialAd newInterstitialAd() {
         InterstitialAd interstitialAd = new InterstitialAd(this);
-        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+
+        if (BuildConfig.DEBUG) {
+            interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        } else {
+            interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+        }
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
-                mNextLevelButton.setEnabled(true);
+
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                mNextLevelButton.setEnabled(true);
+
+                //start new activity  show menu
+                startActivity();
             }
 
             @Override
             public void onAdClosed() {
                 // Proceed to the next level.
-                goToNextLevel();
+                //start new activity  show menu
+                startActivity();
             }
         });
         return interstitialAd;
+    }
+
+    private void startActivity() {
+        startActivity(new Intent(MainActivity.this, MenuActivity.class));
     }
 
     private void showInterstitial() {
         // Show the ad if it's ready. Otherwise toast and reload the ad.
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
-        } else {
-            Toast.makeText(this, "Ad did not load", Toast.LENGTH_SHORT).show();
-            goToNextLevel();
         }
     }
 
@@ -110,12 +122,5 @@ public class MainActivity extends LearnWithMeActivity {
         AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent("android_studio:ad_template").build();
         mInterstitialAd.loadAd(adRequest);
-    }
-
-    private void goToNextLevel() {
-        // Show the next level and reload the ad to prepare for the level after.
-        mLevelTextView.setText("Level " + (++mLevel));
-        mInterstitialAd = newInterstitialAd();
-        loadInterstitial();
     }
 }

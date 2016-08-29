@@ -1,6 +1,6 @@
 package kalei.com.learnwithme.fragments;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 /**
  * Created by risaki on 8/28/16.
