@@ -1,5 +1,6 @@
 package kalei.com.learnwithme.activities;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -13,9 +14,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.fabric.sdk.android.Fabric;
 import kalei.com.learnwithme.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends LearnWithMeActivity {
 
     private static final int START_LEVEL = 1;
     private int mLevel;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         // Create the next level button, which tries to show an interstitial when clicked.

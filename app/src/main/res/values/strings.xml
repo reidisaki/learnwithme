@@ -11,4 +11,9 @@
         For more information, see https://support.google.com/admob/answer/3052638
     <!- -->
     <string name="interstitial_ad_unit_id">ca-app-pub-5747146577301976~2427650045</string>
+    <string name="read_checkbox_label">Read mode</string>
+    <string name="spell_checkbox_label">Spell mode</string>
+    <string name="three_letter_words_label">3 letter words</string>
+    <string name="four_letter_words_label">4 letter words</string>
+    <string name="five_letter_words_label">5 letter words - coming soon</string>
 </resources>
