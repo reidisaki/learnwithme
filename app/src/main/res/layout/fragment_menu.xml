@@ -31,6 +31,7 @@
                   android:layout_height="wrap_content">
         <Button android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/three_letter_button"
                 android:text="@string/three_letter_words_label"/>
         <Button android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,77 +1,30 @@
 package kalei.com.learnwithme.activities;
 
-import com.crashlytics.android.Crashlytics;
-
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import io.fabric.sdk.android.Fabric;
 import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 
 public class MainActivity extends LearnWithMeActivity {
 
-    private static final int START_LEVEL = 1;
-    private int mLevel;
-    private Button mNextLevelButton;
     private InterstitialAd mInterstitialAd;
-    private TextView mLevelTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         // Create the next level button, which tries to show an interstitial when clicked.
-        mNextLevelButton = ((Button) findViewById(R.id.next_level_button));
-        mNextLevelButton.setEnabled(false);
-        mNextLevelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showInterstitial();
-            }
-        });
-
-        // Create the text view to show the level number.
-        mLevelTextView = (TextView) findViewById(R.id.level);
-        mLevel = START_LEVEL;
-
         // Create the InterstitialAd and set the adUnitId (defined in values/strings.xml).
         mInterstitialAd = newInterstitialAd();
         loadInterstitial();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private InterstitialAd newInterstitialAd() {
@@ -85,7 +38,7 @@ public class MainActivity extends LearnWithMeActivity {
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
-
+                mInterstitialAd.show();
             }
 
             @Override
@@ -118,7 +71,6 @@ public class MainActivity extends LearnWithMeActivity {
 
     private void loadInterstitial() {
         // Disable the next level button and load the ad.
-        mNextLevelButton.setEnabled(false);
         AdRequest adRequest = new AdRequest.Builder()
                 .setRequestAgent("android_studio:ad_template").build();
         mInterstitialAd.loadAd(adRequest);
