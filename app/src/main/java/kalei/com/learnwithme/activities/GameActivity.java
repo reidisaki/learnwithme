@@ -7,12 +7,13 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 
 import kalei.com.learnwithme.R;
+import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
 import kalei.com.learnwithme.fragments.GameFragment;
 
 /**
  * Created by risaki on 8/28/16.
  */
-public class GameActivity extends LearnWithMeActivity {
+public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdListener {
 
     public GameFragment mGameFragment;
 
@@ -20,8 +21,10 @@ public class GameActivity extends LearnWithMeActivity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_game);
-        mGameFragment = GameFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mGameFragment).commit();
+        if (b == null) {
+            mGameFragment = GameFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mGameFragment).commit();
+        }
     }
 
     @Override
@@ -41,9 +44,16 @@ public class GameActivity extends LearnWithMeActivity {
         if (mAdView != null) {
             String android_id = Secure.getString(this.getContentResolver(),
                     Secure.ANDROID_ID);
-//            AdRequest adRequest = new AdRequest.Builder().addTestDevice(android_id).build();
-            AdRequest adRequest = new AdRequest.Builder().build();
+//            AdRequest adRequest = new AdRequest.Builder().addTestDevice("1227AC999E49F1FE325D0EA5E2E4E604").build();
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+
             mAdView.loadAd(adRequest);
         }
+    }
+
+    @Override
+    public void createAndShowAd() {
+        newInterstitialAd();
+        loadInterstitial();
     }
 }

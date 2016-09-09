@@ -12,8 +12,8 @@
               android:textSize="180sp"
               tools:text="get"/>
     <LinearLayout android:layout_width="match_parent"
-                  android:layout_alignParentBottom="true"
-                  android:layout_height="150dp"
+                  android:layout_below="@+id/word_txt"
+                  android:layout_height="match_parent"
                   android:orientation="horizontal">
         <Button android:layout_width="wrap_content"
                 android:id="@+id/play_btn"
