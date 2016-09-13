@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable.Orientation;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -290,6 +291,14 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private void sayLetter(final String letter) {
         setupVoice();
         mTTS.speak(letterSound(letter.toLowerCase()), TextToSpeech.QUEUE_FLUSH, null, "");
+
+        /*if we use alexas voice
+
+        //set filenames as letter sound file
+        final MediaPlayer mp = MediaPlayer.create(getActivity(), getResources().getIdentifier(letter,
+                "raw", getActivity().getPackageName()));
+        mp.start();
+        */
     }
 
     private void setupVoice() {
