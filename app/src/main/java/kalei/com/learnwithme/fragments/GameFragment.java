@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -20,6 +21,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +36,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -72,6 +76,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private static final int REQ_CODE_SPEECH_INPUT = 1234;
     private LearnWithMeAdListener adListener;
     private HashMap<String, String> mLetterMap;
+    private HashMap<String, Boolean> mLetterCheckedMap;
+    private SpannableString mContent;
+    private Boolean mCanContinue = false;
 
     @Override
     public void onAttach(Context context) {
@@ -95,6 +102,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     public void onCreate(Bundle b) {
         super.onCreate(b);
         setRetainInstance(true);
+        mLetterCheckedMap = new HashMap<String, Boolean>();
         initLetterMap();
         custom_font = Typeface.createFromAsset(getResources().getAssets(), CARTOON_FONT);
     }
@@ -148,44 +156,63 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         ViewGroup viewGroup = (ViewGroup) getView();
         viewGroup.removeAllViewsInLayout();
+
         mRootView = inflater.inflate(R.layout.fragment_game, viewGroup);
         initViews();
+        //needs to run first to build up underline spans
+        setUnderLineText();
+        //set the mContent span that was built above
+        mWordTextView.setText(mContent);
     }
 
     private void initViews() {
         mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
+        mPlayButton.setEnabled(false);
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
         mWordTextView = (AutofitTextView) mRootView.findViewById(R.id.word_txt);
         mWordTextView.setTypeface(custom_font);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mWordTextView.setScaleX(1.5f);
+        } else {
+            mWordTextView.setScaleX(1f);
+        }
         mWordTextView.setText(mWordsArray[mIndex]);
 
         mWordTextView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(final View v, final MotionEvent event) {
 
+                String word = mWordTextView.getText().toString();
                 DisplayMetrics metrics = getResources().getDisplayMetrics();
                 int deviceTotalWidth = metrics.widthPixels;
-
-                int sectionWidth = deviceTotalWidth / mWordTextView.getText().length();
+                int sectionWidth = deviceTotalWidth / word.length();
                 String letter = "a";
-
-                for (int i = 0; i < mWordTextView.getText().length(); i++) {
+                mContent = new SpannableString(mWordsArray[mIndex]);
+                for (int i = 0; i < word.length(); i++) {
                     int j = i;
                     j++;
                     if (i == 0) {
                         if (event.getRawX() <= sectionWidth) {
                             //its the first section
-                            letter = mWordTextView.getText().toString().split("(?!^)")[0];
+                            letter = word.split("(?!^)")[0];
+
+                            checkForLetterInMap(letter);
                             break;
                         }
                     } else {
                         if (event.getRawX() < sectionWidth * j) {
+
                             //its in section i
-                            letter = mWordTextView.getText().toString().split("(?!^)")[i];
+                            letter = word.split("(?!^)")[i];
+
+                            int index = word.indexOf(letter);
+                            checkForLetterInMap(letter);
                             break;
                         }
                     }
                 }
+
+                mWordTextView.setText(mContent);
                 sayLetter(letter);
 
                 return false;
@@ -193,6 +220,33 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         });
         mPlayButton.setOnClickListener(this);
         mListenButton.setOnClickListener(this);
+    }
+
+    private void checkForLetterInMap(final String letter) {
+        if (mLetterCheckedMap.get(letter) != null) {
+            mLetterCheckedMap.put(letter, true);
+        }
+
+        mCanContinue = true;
+        setUnderLineText();
+
+        if (mCanContinue) {
+            mPlayButton.setEnabled(true);
+        }
+    }
+
+    //sets underline text and if user can continue
+    private void setUnderLineText() {
+        Iterator it = mLetterCheckedMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            if (!(boolean) pair.getValue()) {
+                mCanContinue = false;
+            } else {
+                int index = mWordsArray[mIndex].indexOf(pair.getKey().toString());
+                mContent.setSpan(new UnderlineSpan(), index, index + 1, 0);
+            }
+        }
     }
 
     @Override
@@ -209,55 +263,16 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 //        mWordTextView.setText(Html.fromHtml("<a href='#'>c</a><a href='#'>a</a><a href='#'>t</a>"));
         if (mWordsArray[mIndex] != null) {
             mWordTextView.setText(mWordsArray[mIndex]);
+            loadLetterMap(mWordTextView.getText().toString());
         }
         return mRootView;
     }
 
-    public int getCharIndexFromCoordinate(float x, float y) {
-
-        // Offset the top padding
-        int height = mWordTextView.getPaddingTop();
-
-        for (int i = 0; i < mWordTextView.getLayout().getLineCount(); i++) {
-
-            Rect bounds = new Rect();
-            mWordTextView.getLayout().getLineBounds(i, bounds);
-            height += bounds.height();
-
-            if (height >= y) {
-
-                int lineStart = mWordTextView.getLayout().getLineStart(i);
-                int lineEnd = mWordTextView.getLayout().getLineEnd(i);
-
-                Spanned span = (Spanned) mWordTextView.getText();
-                RelativeSizeSpan[] sizeSpans = span.getSpans(lineStart, lineEnd, RelativeSizeSpan.class);
-                float scaleFactor = 1.2f;
-                if (sizeSpans != null) {
-                    for (int j = 0; j < sizeSpans.length; j++) {
-                        scaleFactor = sizeSpans[j].getSizeChange();
-                    }
-                }
-
-                String lineSpan = mWordTextView.getText().subSequence(lineStart, lineEnd).toString();
-                float[] widths = new float[lineSpan.length()];
-                TextPaint paint = mWordTextView.getPaint();
-                paint.getTextWidths(lineSpan, widths);
-
-                float width = 0;
-
-                for (int j = 0; j < lineSpan.length(); j++) {
-
-                    width += widths[j] * scaleFactor;
-
-                    if (width >= x || j == lineSpan.length() - 1) {
-
-                        return lineStart + j;
-                    }
-                }
-            }
+    private void loadLetterMap(String s) {
+        mLetterCheckedMap = new HashMap<>();
+        for (String letter : s.split("(?!^)")) {
+            mLetterCheckedMap.put(letter, false);
         }
-
-        return -1;
     }
 
     @Override
@@ -367,7 +382,12 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             mIndex = 0;
         }
         mRootView.setBackgroundColor(generateRandomColor());
-        mWordTextView.setText(mWordsArray[mIndex]);
+        String word = mWordsArray[mIndex];
+
+        mCanContinue = false;
+        loadLetterMap(word);
+        mWordTextView.setText(word);
+        mPlayButton.setEnabled(false);
     }
 
     public void randomizeWords() {
