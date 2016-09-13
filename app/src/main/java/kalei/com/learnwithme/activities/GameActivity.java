@@ -25,12 +25,12 @@ public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdLi
             mGameFragment = GameFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mGameFragment).commit();
         }
+        loadAds();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadAds();
     }
 
     public void loadAds() {

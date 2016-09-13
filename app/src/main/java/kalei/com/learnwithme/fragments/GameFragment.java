@@ -4,31 +4,43 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
-import android.support.annotation.Nullable;
+import android.text.Layout;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.RelativeSizeSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
 import kalei.com.learnwithme.R;
-import kalei.com.learnwithme.activities.LearnWithMeActivity;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
+import me.grantland.widget.AutofitTextView;
 
 /**
  * Created by risaki on 9/7/16.
@@ -36,10 +48,12 @@ import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListene
 public class GameFragment extends LearnWithMeFragment implements OnClickListener {
     private static final int NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN = 10;
     private static final float SPEECH_RATE = .1f;
-    private static final float THRESHOLD_CORRECT_PERCENTAGE = .5f;
+    private static final float THRESHOLD_CORRECT_PERCENTAGE = .75f;
     private static final float PITCH_VALUE = 1.1f;
+    private static final String CARTOON_FONT = "LDFComicSans.ttf";
     private final String TAG = this.getClass().getSimpleName();
 
+    private Typeface custom_font;
     private String[] mWordsArray = {"one", "two", "bat", "cat", "mat", "pat", "rat", "sat", "can", "fan", "man", "pan", "ran", "tan", "cap", "map", "nap",
             "tap",
             "sap", "bag", "wag", "tag", "rag", "dam", "ham", "jam", "ram", "yam", "bad", "dad", "had", "mad", "jar", "tar", "dry", "my,", "all", "are", "ask",
@@ -51,12 +65,13 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             "she", "bar", "car", "far"};
 
     private Button mPlayButton, mListenButton;
-    private TextView mWordTextView;
+    private AutofitTextView mWordTextView;
     private int mIndex = 0;
     private TextToSpeech mTTS;
     private View mRootView;
     private static final int REQ_CODE_SPEECH_INPUT = 1234;
     private LearnWithMeAdListener adListener;
+    private HashMap<String, String> mLetterMap;
 
     @Override
     public void onAttach(Context context) {
@@ -80,6 +95,38 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     public void onCreate(Bundle b) {
         super.onCreate(b);
         setRetainInstance(true);
+        initLetterMap();
+        custom_font = Typeface.createFromAsset(getResources().getAssets(), CARTOON_FONT);
+    }
+
+    private void initLetterMap() {
+        mLetterMap = new HashMap<>();
+        mLetterMap.put("a", "ahh");
+        mLetterMap.put("b", "bay");
+        mLetterMap.put("c", "ka");
+        mLetterMap.put("d", "dah");
+        mLetterMap.put("e", "ae");
+        mLetterMap.put("f", "f");
+        mLetterMap.put("g", "gah");
+        mLetterMap.put("h", "ha");
+        mLetterMap.put("i", "the letter i");
+        mLetterMap.put("j", "gee");
+        mLetterMap.put("k", "ka");
+        mLetterMap.put("l", "ll");
+        mLetterMap.put("m", "maw");
+        mLetterMap.put("n", "naw");
+        mLetterMap.put("o", "ooh");
+        mLetterMap.put("p", "pah");
+        mLetterMap.put("q", "kwa");
+        mLetterMap.put("r", "ra");
+        mLetterMap.put("s", "saw");
+        mLetterMap.put("t", "tah");
+        mLetterMap.put("u", "ooo");
+        mLetterMap.put("v", "vay");
+        mLetterMap.put("w", "wuh");
+        mLetterMap.put("x", "ex");
+        mLetterMap.put("y", "yu");
+        mLetterMap.put("z", "za");
     }
 
     @Override
@@ -102,10 +149,48 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         ViewGroup viewGroup = (ViewGroup) getView();
         viewGroup.removeAllViewsInLayout();
         mRootView = inflater.inflate(R.layout.fragment_game, viewGroup);
+        initViews();
+    }
+
+    private void initViews() {
         mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
-        mWordTextView = (TextView) mRootView.findViewById(R.id.word_txt);
+        mWordTextView = (AutofitTextView) mRootView.findViewById(R.id.word_txt);
+        mWordTextView.setTypeface(custom_font);
         mWordTextView.setText(mWordsArray[mIndex]);
+
+        mWordTextView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(final View v, final MotionEvent event) {
+
+                DisplayMetrics metrics = getResources().getDisplayMetrics();
+                int deviceTotalWidth = metrics.widthPixels;
+
+                int sectionWidth = deviceTotalWidth / mWordTextView.getText().length();
+                String letter = "a";
+
+                for (int i = 0; i < mWordTextView.getText().length(); i++) {
+                    int j = i;
+                    j++;
+                    if (i == 0) {
+                        if (event.getRawX() <= sectionWidth) {
+                            //its the first section
+                            letter = mWordTextView.getText().toString().split("(?!^)")[0];
+                            break;
+                        }
+                    } else {
+                        if (event.getRawX() < sectionWidth * j) {
+                            //its in section i
+                            letter = mWordTextView.getText().toString().split("(?!^)")[i];
+                            break;
+                        }
+                    }
+                }
+                sayLetter(letter);
+
+                return false;
+            }
+        });
         mPlayButton.setOnClickListener(this);
         mListenButton.setOnClickListener(this);
     }
@@ -117,15 +202,62 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             mRootView = inflater.inflate(R.layout.fragment_game, container, false);
             randomizeWords();
 //        ((MainActivity) getActivity()).getActionBar().hide();
-            mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
-            mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
-            mWordTextView = (TextView) mRootView.findViewById(R.id.word_txt);
+            initViews();
             mRootView.setBackgroundColor(generateRandomColor());
-            mPlayButton.setOnClickListener(this);
-            mListenButton.setOnClickListener(this);
         }
-        mWordTextView.setText(mWordsArray[mIndex]);
+
+//        mWordTextView.setText(Html.fromHtml("<a href='#'>c</a><a href='#'>a</a><a href='#'>t</a>"));
+        if (mWordsArray[mIndex] != null) {
+            mWordTextView.setText(mWordsArray[mIndex]);
+        }
         return mRootView;
+    }
+
+    public int getCharIndexFromCoordinate(float x, float y) {
+
+        // Offset the top padding
+        int height = mWordTextView.getPaddingTop();
+
+        for (int i = 0; i < mWordTextView.getLayout().getLineCount(); i++) {
+
+            Rect bounds = new Rect();
+            mWordTextView.getLayout().getLineBounds(i, bounds);
+            height += bounds.height();
+
+            if (height >= y) {
+
+                int lineStart = mWordTextView.getLayout().getLineStart(i);
+                int lineEnd = mWordTextView.getLayout().getLineEnd(i);
+
+                Spanned span = (Spanned) mWordTextView.getText();
+                RelativeSizeSpan[] sizeSpans = span.getSpans(lineStart, lineEnd, RelativeSizeSpan.class);
+                float scaleFactor = 1.2f;
+                if (sizeSpans != null) {
+                    for (int j = 0; j < sizeSpans.length; j++) {
+                        scaleFactor = sizeSpans[j].getSizeChange();
+                    }
+                }
+
+                String lineSpan = mWordTextView.getText().subSequence(lineStart, lineEnd).toString();
+                float[] widths = new float[lineSpan.length()];
+                TextPaint paint = mWordTextView.getPaint();
+                paint.getTextWidths(lineSpan, widths);
+
+                float width = 0;
+
+                for (int j = 0; j < lineSpan.length(); j++) {
+
+                    width += widths[j] * scaleFactor;
+
+                    if (width >= x || j == lineSpan.length() - 1) {
+
+                        return lineStart + j;
+                    }
+                }
+            }
+        }
+
+        return -1;
     }
 
     @Override
@@ -140,21 +272,33 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         }
     }
 
-    private void sayWord() {
+    private void sayLetter(final String letter) {
+        setupVoice();
+        mTTS.speak(letterSound(letter.toLowerCase()), TextToSpeech.QUEUE_FLUSH, null, "");
+    }
+
+    private void setupVoice() {
         mTTS.setSpeechRate(SPEECH_RATE);
         Set<Voice> voices = mTTS.getVoices();
 
-        for (Voice v : voices) {
-            //could use a british voice here
-            if (v.getLocale().equals(Locale.getDefault()) && v.getQuality() == Voice.QUALITY_HIGH) {
-                Log.i("reid", v.toString());
-            }
-            if (v.getQuality() == Voice.QUALITY_HIGH && v.getLatency() == Voice.LATENCY_LOW && v.getLocale().equals(Locale.getDefault())) {
-                mTTS.setVoice(v);
+        if (voices != null) {
+            for (Voice v : voices) {
+                //could use a british voice here
+//            if (v.getLocale().equals(Locale.getDefault()) && v.getQuality() == Voice.QUALITY_HIGH) {
+//                Log.i("reid", v.toString());
+//            }
+                if (v.getQuality() == Voice.QUALITY_HIGH && v.getLatency() == Voice.LATENCY_LOW && v.getLocale().equals(Locale.getDefault())) {
+                    mTTS.setVoice(v);
+                }
             }
         }
-
         mTTS.setPitch(PITCH_VALUE);
+//        mTTS.speak("ka", TextToSpeech.QUEUE_FLUSH, null, "");
+
+    }
+
+    private void sayWord() {
+        setupVoice();
         mTTS.speak(mWordsArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");
     }
 
@@ -188,17 +332,25 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             case REQ_CODE_SPEECH_INPUT: {
                 if (resultCode == getActivity().RESULT_OK && null != data) {
 
+                    boolean isAnswerGoodEnough = false;
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String theirAnswer = result.get(0);
+                    for (String answer : result) {
+                        Log.i(TAG, "result: " + answer);
+                        if (!isAnswerGoodEnough) {
+                            isAnswerGoodEnough = answerIsCloseEnough(mWordsArray[mIndex].toLowerCase(), answer.toLowerCase());
+                        }
+                    }
 
-                    String resultText = answerIsCloseEnough(mWordsArray[mIndex].toLowerCase(), theirAnswer.toLowerCase()) ? "good job you said it right" :
+                    String resultText = isAnswerGoodEnough ? "good job you said it right" :
                             "sorry the word was:" + mWordsArray[mIndex] + " you said:" + result.get(0);
 
                     Toast.makeText(getActivity(),
                             resultText,
                             Toast.LENGTH_LONG).show();
-                    loadNextWord();
+                    if (isAnswerGoodEnough) {
+                        loadNextWord();
+                    }
                 }
             }
             break;
@@ -249,19 +401,20 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         final int green = (baseGreen + mRandom.nextInt(256)) / 2;
         final int blue = (baseBlue + mRandom.nextInt(256)) / 2;
 
-        return Color.rgb(red, green, blue);
+        return baseColor;
+//        return Color.rgb(red, green, blue);
     }
 
     public boolean answerIsCloseEnough(String answer, String theirAnswer) {
-        String[] answerArray = answer.split("");
-        String[] theirAnswerArray = theirAnswer.split("");
+        String[] answerArray = answer.split("(?!^)");
+        String[] theirAnswerArray = theirAnswer.split("(?!^)");
         int numLettersFound = 0;
-        for (int i = 0; i < answerArray.length; i++) {
-            if (theirAnswer.contains(answerArray[i])) {
+        for (int i = 0; i < theirAnswerArray.length; i++) {
+            if (answer.contains(theirAnswerArray[i])) {
                 numLettersFound++;
             }
         }
-        float percentage = numLettersFound / answer.length();
+        double percentage = (double) numLettersFound / theirAnswer.length();
         return percentage >= THRESHOLD_CORRECT_PERCENTAGE ? true : false;
     }
 
@@ -271,5 +424,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         if (mTTS != null) {
             mTTS.shutdown();
         }
+    }
+
+    private String letterSound(String letter) {
+        return mLetterMap.get(letter);
     }
 }
