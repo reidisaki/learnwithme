@@ -4,24 +4,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable.Orientation;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
-import android.text.Layout;
 import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -32,7 +21,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -171,10 +159,21 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
         mRootView = inflater.inflate(R.layout.fragment_game, viewGroup);
         initViews();
+        String word = mWordsArray[mIndex];
         //needs to run first to build up underline spans
+        if (!mContent.toString().equals(word)) {
+            mContent = new SpannableString(word);
+        }
         mContent = setUnderLineText();
+        enableSpeakButton();
         //set the mContent span that was built above
         mWordTextView.setText(mContent);
+    }
+
+    private void enableSpeakButton() {
+        if (mCanContinue) {
+            mPlayButton.setEnabled(true);
+        }
     }
 
     private void initViews() {
@@ -194,7 +193,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             @Override
             public boolean onTouch(final View v, final MotionEvent event) {
 
-                String word = mWordTextView.getText().toString();
+                String word = mWordsArray[mIndex];
                 DisplayMetrics metrics = getResources().getDisplayMetrics();
                 int deviceTotalWidth = metrics.widthPixels;
                 int sectionWidth = deviceTotalWidth / word.length();
@@ -229,9 +228,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mCanContinue = true;
         setUnderLineText();
 
-        if (mCanContinue) {
-            mPlayButton.setEnabled(true);
-        }
+        enableSpeakButton();
     }
 
     //sets underline text and if user can continue
@@ -261,9 +258,10 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         }
 
 //        mWordTextView.setText(Html.fromHtml("<a href='#'>c</a><a href='#'>a</a><a href='#'>t</a>"));
-        if (mWordsArray[mIndex] != null) {
-            mWordTextView.setText(mWordsArray[mIndex]);
-            loadLetterMap(mWordTextView.getText().toString());
+        String word = mWordsArray[mIndex];
+        if (word != null) {
+            mWordTextView.setText(word);
+            loadLetterMap(word);
         }
         return mRootView;
     }
