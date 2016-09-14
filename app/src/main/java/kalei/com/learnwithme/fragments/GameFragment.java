@@ -172,7 +172,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mRootView = inflater.inflate(R.layout.fragment_game, viewGroup);
         initViews();
         //needs to run first to build up underline spans
-        setUnderLineText();
+        mContent = setUnderLineText();
         //set the mContent span that was built above
         mWordTextView.setText(mContent);
     }
@@ -199,28 +199,15 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                 int deviceTotalWidth = metrics.widthPixels;
                 int sectionWidth = deviceTotalWidth / word.length();
                 String letter = "a";
-                mContent = new SpannableString(mWordsArray[mIndex]);
+                mContent = new SpannableString(word);
                 for (int i = 0; i < word.length(); i++) {
                     int j = i;
                     j++;
-                    if (i == 0) {
-                        if (event.getRawX() <= sectionWidth) {
-                            //its the first section
-                            letter = word.split("(?!^)")[0];
-
-                            checkForLetterInMap(letter);
-                            break;
-                        }
-                    } else {
-                        if (event.getRawX() < sectionWidth * j) {
-
-                            //its in section i
-                            letter = word.split("(?!^)")[i];
-
-                            int index = word.indexOf(letter);
-                            checkForLetterInMap(letter);
-                            break;
-                        }
+                    if (event.getRawX() < sectionWidth * j) {
+                        //its in section i
+                        letter = word.split("(?!^)")[i];
+                        checkForLetterInMap(letter);
+                        break;
                     }
                 }
 
@@ -248,7 +235,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     //sets underline text and if user can continue
-    private void setUnderLineText() {
+    private SpannableString setUnderLineText() {
         Iterator it = mLetterCheckedMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
@@ -259,6 +246,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                 mContent.setSpan(new UnderlineSpan(), index, index + 1, 0);
             }
         }
+        return mContent;
     }
 
     @Override
@@ -376,6 +364,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                             isAnswerGoodEnough = answerIsCloseEnough(mWordsArray[mIndex].toLowerCase(), answer.toLowerCase());
                         }
                     }
+                    //todo: make this more of a fun thing for kids showing animations and explosions
 
                     String resultText = isAnswerGoodEnough ? "good job you said it right" :
                             "sorry the word was:" + mWordsArray[mIndex] + " you said:" + result.get(0);
@@ -430,7 +419,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     public int generateRandomColor() {
         final Random mRandom = new Random(System.currentTimeMillis());
-// This is the base color which will be mixed with the generated one
+        // This is the base color which will be mixed with the generated one
         final int baseColor = Color.WHITE;
 
         final int baseRed = Color.red(baseColor);
@@ -441,8 +430,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         final int green = (baseGreen + mRandom.nextInt(256)) / 2;
         final int blue = (baseBlue + mRandom.nextInt(256)) / 2;
 
-        return baseColor;
-//        return Color.rgb(red, green, blue);
+        return Color.rgb(red, green, blue);
     }
 
     public boolean answerIsCloseEnough(String answer, String theirAnswer) {
