@@ -19,6 +19,7 @@ import kalei.com.learnwithme.activities.GameActivity;
 public class MenuFragment extends LearnWithMeFragment implements OnClickListener {
 
     private Button threeLetterButton;
+    private Button kindergartenButton;
 
     public static MenuFragment newInstance() {
         MenuFragment fragment = new MenuFragment();
@@ -35,16 +36,28 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
 //        ((MainActivity) getActivity()).getActionBar().hide();
         View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
         threeLetterButton = (Button) rootView.findViewById(R.id.three_letter_button);
+        kindergartenButton = (Button) rootView.findViewById(R.id.kindergarten_button);
         threeLetterButton.setOnClickListener(this);
+        kindergartenButton.setOnClickListener(this);
+
 //        mSettingsImage = (ImageView) rootView.findViewById(R.id.settings_image);
         return rootView;
     }
 
     @Override
     public void onClick(final View v) {
-        if (v.getId() == R.id.three_letter_button) {
-            Intent i = new Intent(getActivity(), GameActivity.class);
-            startActivity(i);
+        Intent i;
+        switch (v.getId()) {
+            case R.id.three_letter_button:
+                i = new Intent(getActivity(), GameActivity.class);
+                i.putExtra(getString(R.string.game_type_label), getString(R.string.three_letter_words_label));
+                startActivity(i);
+                break;
+            case R.id.kindergarten_button:
+                i = new Intent(getActivity(), GameActivity.class);
+                i.putExtra(getString(R.string.game_type_label), getString(R.string.kindergarten));
+                startActivity(i);
+                break;
         }
     }
 }

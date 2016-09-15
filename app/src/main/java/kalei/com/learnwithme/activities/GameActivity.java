@@ -6,6 +6,7 @@ import com.google.android.gms.ads.AdView;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 
+import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
 import kalei.com.learnwithme.fragments.GameFragment;
@@ -21,8 +22,10 @@ public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdLi
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_game);
-        if (b == null) {
-            mGameFragment = GameFragment.newInstance();
+        Bundle args = getIntent().getExtras();
+        if (args != null) {
+            mGameFragment = GameFragment.newInstance(args.getString(getString(R.string.game_type_label)));
+            mGameFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mGameFragment).commit();
         }
         loadAds();

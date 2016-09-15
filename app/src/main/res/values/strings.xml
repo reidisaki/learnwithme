@@ -16,8 +16,11 @@
     <string name="three_letter_words_label">3 letter words</string>
     <string name="four_letter_words_label">4 letter words</string>
     <string name="five_letter_words_label">5 letter words - coming soon</string>
+    <string name="kindergarten">kindergarten</string>
     <string name="speak_button_text">Speak</string>
     <string name="listen_button_text">Listen</string>
+    <string name="game_type_label">game_type_label</string>
+
     <string name="banner_ad_unit_id">ca-app-pub-5747146577301976/8570621645</string>
 
 </resources>

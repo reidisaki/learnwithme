@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.support.annotation.Nullable;
 
+import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.fragments.MenuFragment;
 
@@ -43,7 +44,7 @@ public class MenuActivity extends LearnWithMeActivity {
             String android_id = Secure.getString(this.getContentResolver(),
                     Secure.ANDROID_ID);
 //            AdRequest adRequest = new AdRequest.Builder().addTestDevice(android_id).build();
-            AdRequest adRequest = new AdRequest.Builder().build();
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
             mAdView.loadAd(adRequest);
         }
     }

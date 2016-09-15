@@ -33,6 +33,7 @@ import java.util.Set;
 
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
+import kalei.com.learnwithme.models.Letter;
 import me.grantland.widget.AutofitTextView;
 
 /**
@@ -58,7 +59,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             "she", "bar", "car", "far"};
 
     private String[] mKindergartenArray = {
-
             "WAS", "ON", "ARE", "AS", "HURT", "CAT", "SHE", "FUN", "THE", "FIRST", "BE", "THIS", "FROM", "EGG", "HAVE", "NOT", "BUT", "ALL", "WHAT", "FOUR",
             "THEIR", "IF", "DO", "HOW", "WHICH", "THEM", "THEN", "RAN", "SO", "OTHER", "HAS", "MORE", "HER", "TWO", "LIKE", "MAKE", "THAN", "FIRST", "BEEN",
             "ITS", "OVER", "DID", "DOWN", "ONLY", "LONG", "BIG", "BLUE", "VERY", "LITTLE", "AFTER", "FUR", "SIR", "FLY", "FOR", "SHIRT", "HIS", "THEY", "AT",
@@ -76,9 +76,12 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private static final int REQ_CODE_SPEECH_INPUT = 1234;
     private LearnWithMeAdListener adListener;
     private HashMap<String, String> mLetterMap;
-    private HashMap<String, Boolean> mLetterCheckedMap;
+    //    private HashMap<String, Boolean> mLetterCheckedMap;
+    private ArrayList<Letter> mLetterList;
     private SpannableString mContent;
     private Boolean mCanContinue = false;
+    private static String GAME_TYPE = "game_type_label";
+    private String mGameType;
 
     @Override
     public void onAttach(Context context) {
@@ -90,10 +93,10 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         }
     }
 
-    public static GameFragment newInstance() {
+    public static GameFragment newInstance(String gameType) {
         GameFragment fragment = new GameFragment();
         Bundle bundle = new Bundle();
-
+        bundle.putString(GAME_TYPE, gameType);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -101,8 +104,18 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
+        Bundle args = getArguments();
+        if (args != null) {
+            mGameType = args.getString(GAME_TYPE);
+            switch (mGameType) {
+                case "kindergarten":
+                    mWordsArray = mKindergartenArray;
+                    break;
+            }
+        }
         setRetainInstance(true);
-        mLetterCheckedMap = new HashMap<String, Boolean>();
+//        mLetterCheckedMap = new HashMap<String, Boolean>();
+        mLetterList = new ArrayList<>();
         initLetterMap();
         custom_font = Typeface.createFromAsset(getResources().getAssets(), CARTOON_FONT);
     }
@@ -161,7 +174,8 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         initViews();
         String word = mWordsArray[mIndex];
         //needs to run first to build up underline spans
-        if (!mContent.toString().equals(word)) {
+
+        if (mContent == null || !mContent.toString().equals(word)) {
             mContent = new SpannableString(word);
         }
         mContent = setUnderLineText();
@@ -182,11 +196,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
         mWordTextView = (AutofitTextView) mRootView.findViewById(R.id.word_txt);
         mWordTextView.setTypeface(custom_font);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            mWordTextView.setScaleX(1.5f);
-        } else {
-            mWordTextView.setScaleX(1f);
-        }
         mWordTextView.setText(mWordsArray[mIndex]);
 
         mWordTextView.setOnTouchListener(new OnTouchListener() {
@@ -195,17 +204,20 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
                 String word = mWordsArray[mIndex];
                 DisplayMetrics metrics = getResources().getDisplayMetrics();
-                int deviceTotalWidth = metrics.widthPixels;
-                int sectionWidth = deviceTotalWidth / word.length();
+                int screenWidth = metrics.widthPixels;
+                int wordTotalWidth = mWordTextView.getMeasuredWidth();
+                int sectionWidth = wordTotalWidth / word.length();
+                int wordPadding = (screenWidth - wordTotalWidth) / 2;
+
                 String letter = "a";
                 mContent = new SpannableString(word);
                 for (int i = 0; i < word.length(); i++) {
                     int j = i;
                     j++;
-                    if (event.getRawX() < sectionWidth * j) {
+                    if (event.getRawX() < (sectionWidth * j) + wordPadding) {
                         //its in section i
                         letter = word.split("(?!^)")[i];
-                        checkForLetterInMap(letter);
+                        checkForLetterInMap(letter, i);
                         break;
                     }
                 }
@@ -220,10 +232,14 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mListenButton.setOnClickListener(this);
     }
 
-    private void checkForLetterInMap(final String letter) {
-        if (mLetterCheckedMap.get(letter) != null) {
-            mLetterCheckedMap.put(letter, true);
+    private void checkForLetterInMap(final String letter, int index) {
+        Letter letterObj = mLetterList.get(index);
+        if (letterObj.getLetterCharacter().equals(letter)) {
+            letterObj.setUnderlined(true);
         }
+//        if (mLetterCheckedMap.get(letter) != null) {
+//            mLetterCheckedMap.put(letter, true);
+//        }
 
         mCanContinue = true;
         setUnderLineText();
@@ -233,16 +249,27 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     //sets underline text and if user can continue
     private SpannableString setUnderLineText() {
-        Iterator it = mLetterCheckedMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            if (!(boolean) pair.getValue()) {
+        for (int j = 0; j < mLetterList.size(); j++) {
+            Letter letter = mLetterList.get(j);
+            if (!letter.isUnderlined()) {
                 mCanContinue = false;
             } else {
-                int index = mWordsArray[mIndex].indexOf(pair.getKey().toString());
+                int index = letter.getIndexOfLetter();
                 mContent.setSpan(new UnderlineSpan(), index, index + 1, 0);
             }
         }
+//        Iterator it = mLetterCheckedMap.entrySet().iterator();
+//        int i = 0;
+//        while (it.hasNext()) {
+//            i++;
+//            Map.Entry pair = (Map.Entry) it.next();
+//            if (!(boolean) pair.getValue()) {
+//                mCanContinue = false;
+//            } else {
+//                int index = mWordsArray[mIndex].indexOf(pair.getKey().toString());
+//                mContent.setSpan(new UnderlineSpan(), index, index + 1, 0);
+//            }
+//        }
         return mContent;
     }
 
@@ -267,9 +294,13 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private void loadLetterMap(String s) {
-        mLetterCheckedMap = new HashMap<>();
+//        mLetterCheckedMap = new HashMap<>();
+        mLetterList = new ArrayList<>();
+        int index = 0;
         for (String letter : s.split("(?!^)")) {
-            mLetterCheckedMap.put(letter, false);
+            mLetterList.add(new Letter(letter, false, index));
+            index++;
+//            mLetterCheckedMap.put(letter, false);
         }
     }
 
