@@ -6,7 +6,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.Image;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.media.SoundPool.OnLoadCompleteListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -72,7 +78,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private Button mPlayButton, mListenButton;
     private AutofitTextView mWordTextView;
-    private int mIndex = 0;
+    private int mIndex = 0, mCorrectSoundId, mAwwSoundId;
     private TextToSpeech mTTS;
     private View mRootView;
     private ImageView mLeftArrow, mRightArrow;
@@ -85,6 +91,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private Boolean mCanContinue = false;
     private static String GAME_TYPE = "game_type_label";
     private String mGameType;
+    private SoundPool mSound;
 
     @Override
     public void onAttach(Context context) {
@@ -118,6 +125,19 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         }
         setRetainInstance(true);
 //        mLetterCheckedMap = new HashMap<String, Boolean>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            AudioAttributes audioAttrib = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+            mSound = new SoundPool.Builder().setAudioAttributes(audioAttrib).setMaxStreams(6).build();
+        } else {
+
+            mSound = new SoundPool(6, AudioManager.STREAM_MUSIC, 0);
+        }
+        mCorrectSoundId = mSound.load(getActivity(), R.raw.correct, 1);
+        mAwwSoundId = mSound.load(getActivity(), R.raw.aww, 1);
         mLetterList = new ArrayList<>();
         initLetterMap();
         custom_font = Typeface.createFromAsset(getResources().getAssets(), CARTOON_FONT);
@@ -421,12 +441,11 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
                     String resultText = isAnswerGoodEnough ? "good job you said it right" :
                             "sorry the word was:" + mWordsArray[mIndex] + " you said:" + result.get(0);
-
-                    Toast.makeText(getActivity(),
-                            resultText,
-                            Toast.LENGTH_LONG).show();
                     if (isAnswerGoodEnough) {
+                        mSound.play(mCorrectSoundId, 1, 1, 10, 0, 1);
                         loadNextWord();
+                    } else {
+                        mSound.play(mAwwSoundId, 1, 1, 10, 0, 1);
                     }
                 }
             }
