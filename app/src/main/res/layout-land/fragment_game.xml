@@ -4,7 +4,11 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
+    <ImageView
+            style="@style/arrow_img"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/left_arrow"
+            android:id="@+id/left_arrow_img"/>
     <me.grantland.widget.AutofitTextView
             android:id="@+id/word_txt"
             android:layout_above="@+id/button_layout"
@@ -17,6 +21,11 @@
             tools:text="hip"
             android:singleLine="true"
     />
+    <ImageView
+            style="@style/arrow_img"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/right_arrow"
+            android:id="@+id/right_arrow_img"/>
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_alignParentBottom="true"

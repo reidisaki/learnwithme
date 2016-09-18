@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -21,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private int mIndex = 0;
     private TextToSpeech mTTS;
     private View mRootView;
+    private ImageView mLeftArrow, mRightArrow;
     private static final int REQ_CODE_SPEECH_INPUT = 1234;
     private LearnWithMeAdListener adListener;
     private HashMap<String, String> mLetterMap;
@@ -194,6 +197,13 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
         mPlayButton.setEnabled(false);
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
+        mLeftArrow = (ImageView) mRootView.findViewById(R.id.left_arrow_img);
+        if (mIndex == 0) {
+            mLeftArrow.setVisibility(View.GONE);
+        }
+        mRightArrow = (ImageView) mRootView.findViewById(R.id.right_arrow_img);
+        mRightArrow.setOnClickListener(this);
+        mLeftArrow.setOnClickListener(this);
         mWordTextView = (AutofitTextView) mRootView.findViewById(R.id.word_txt);
         mWordTextView.setTypeface(custom_font);
         mWordTextView.setText(mWordsArray[mIndex]);
@@ -313,6 +323,20 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             case R.id.speak_btn:
                 sayWord();
                 break;
+            case R.id.left_arrow_img:
+                getPrevWord();
+                break;
+            case R.id.right_arrow_img:
+                loadNextWord();
+                break;
+        }
+    }
+
+    private void getPrevWord() {
+        if (mIndex > 0) {
+            mIndex--;
+            mLeftArrow.setVisibility(mIndex > 1 ? View.VISIBLE : View.GONE);
+            setupWord();
         }
     }
 
@@ -412,6 +436,11 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private void loadNextWord() {
         mIndex++;
+        mLeftArrow.setVisibility(mIndex > 0 ? View.VISIBLE : View.GONE);
+        setupWord();
+    }
+
+    private void setupWord() {
         //show interstitial every 10 times
         if (mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
             adListener.createAndShowAd();
