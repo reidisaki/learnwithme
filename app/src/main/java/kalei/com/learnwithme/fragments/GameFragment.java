@@ -1,5 +1,6 @@
 package kalei.com.learnwithme.fragments;
 
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +48,7 @@ import me.grantland.widget.AutofitTextView;
 /**
  * Created by risaki on 9/7/16.
  */
-public class GameFragment extends LearnWithMeFragment implements OnClickListener {
+public class GameFragment extends LearnWithMeFragment implements OnClickListener, OnLoadCompleteListener {
     private static final int NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN = 10;
     private static final float SPEECH_RATE = .1f;
     private static final float THRESHOLD_CORRECT_PERCENTAGE = .75f;
@@ -78,7 +79,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private Button mPlayButton, mListenButton;
     private AutofitTextView mWordTextView;
-    private int mIndex = 0, mCorrectSoundId, mAwwSoundId;
+    private int mIndex = 0, mCorrectSoundId, mAwwSoundId, mSoundsLoaded = 0;
     private TextToSpeech mTTS;
     private View mRootView;
     private ImageView mLeftArrow, mRightArrow;
@@ -92,6 +93,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private static String GAME_TYPE = "game_type_label";
     private String mGameType;
     private SoundPool mSound;
+
+    private int mASoundId, mBSoundId, mCSoundId, mDSoundId, mESoundId, mFSoundId, mGSoundId, mHSoundId, mISoundId, mJSoundId, mKSoundId, mLSoundId, mMSoundId, mNSoundId, mOSoundId, mPSoundId, mQSoundId, mRSoundId, mSSoundId, mTSoundId, mUSoundId, mVSoundId, mWSoundId, mXSoundId, mYSoundId, mZSoundId;
+    private ProgressDialog mProgress;
 
     @Override
     public void onAttach(Context context) {
@@ -113,6 +117,12 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     @Override
     public void onCreate(Bundle b) {
+        mProgress = new ProgressDialog(getActivity());
+        mProgress.setTitle("Loading sounds");
+        mProgress.setMessage("loading..");
+        mProgress.setCancelable(false);
+        mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgress.show();
         super.onCreate(b);
         Bundle args = getArguments();
         if (args != null) {
@@ -123,6 +133,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                     break;
             }
         }
+
         setRetainInstance(true);
 //        mLetterCheckedMap = new HashMap<String, Boolean>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -136,11 +147,69 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
             mSound = new SoundPool(6, AudioManager.STREAM_MUSIC, 0);
         }
+        mSound.setOnLoadCompleteListener(this);
+        loadSounds();
         mCorrectSoundId = mSound.load(getActivity(), R.raw.correct, 1);
         mAwwSoundId = mSound.load(getActivity(), R.raw.aww, 1);
         mLetterList = new ArrayList<>();
         initLetterMap();
         custom_font = Typeface.createFromAsset(getResources().getAssets(), CARTOON_FONT);
+    }
+
+    private void loadSounds() {
+
+        mASoundId = mSound.load(getActivity(), getResources().getIdentifier("a",
+                "raw", getActivity().getPackageName()), 1);
+        mBSoundId = mSound.load(getActivity(), getResources().getIdentifier("b",
+                "raw", getActivity().getPackageName()), 1);
+        mCSoundId = mSound.load(getActivity(), getResources().getIdentifier("c",
+                "raw", getActivity().getPackageName()), 1);
+        mDSoundId = mSound.load(getActivity(), getResources().getIdentifier("d",
+                "raw", getActivity().getPackageName()), 1);
+        mESoundId = mSound.load(getActivity(), getResources().getIdentifier("e",
+                "raw", getActivity().getPackageName()), 1);
+        mFSoundId = mSound.load(getActivity(), getResources().getIdentifier("f",
+                "raw", getActivity().getPackageName()), 1);
+        mGSoundId = mSound.load(getActivity(), getResources().getIdentifier("g",
+                "raw", getActivity().getPackageName()), 1);
+        mHSoundId = mSound.load(getActivity(), getResources().getIdentifier("h",
+                "raw", getActivity().getPackageName()), 1);
+        mISoundId = mSound.load(getActivity(), getResources().getIdentifier("i",
+                "raw", getActivity().getPackageName()), 1);
+        mJSoundId = mSound.load(getActivity(), getResources().getIdentifier("j",
+                "raw", getActivity().getPackageName()), 1);
+        mKSoundId = mSound.load(getActivity(), getResources().getIdentifier("k",
+                "raw", getActivity().getPackageName()), 1);
+        mLSoundId = mSound.load(getActivity(), getResources().getIdentifier("l",
+                "raw", getActivity().getPackageName()), 1);
+        mMSoundId = mSound.load(getActivity(), getResources().getIdentifier("m",
+                "raw", getActivity().getPackageName()), 1);
+        mNSoundId = mSound.load(getActivity(), getResources().getIdentifier("n",
+                "raw", getActivity().getPackageName()), 1);
+        mOSoundId = mSound.load(getActivity(), getResources().getIdentifier("o",
+                "raw", getActivity().getPackageName()), 1);
+        mPSoundId = mSound.load(getActivity(), getResources().getIdentifier("p",
+                "raw", getActivity().getPackageName()), 1);
+        mQSoundId = mSound.load(getActivity(), getResources().getIdentifier("q",
+                "raw", getActivity().getPackageName()), 1);
+        mRSoundId = mSound.load(getActivity(), getResources().getIdentifier("r",
+                "raw", getActivity().getPackageName()), 1);
+        mSSoundId = mSound.load(getActivity(), getResources().getIdentifier("s",
+                "raw", getActivity().getPackageName()), 1);
+        mTSoundId = mSound.load(getActivity(), getResources().getIdentifier("t",
+                "raw", getActivity().getPackageName()), 1);
+        mUSoundId = mSound.load(getActivity(), getResources().getIdentifier("u",
+                "raw", getActivity().getPackageName()), 1);
+        mVSoundId = mSound.load(getActivity(), getResources().getIdentifier("v",
+                "raw", getActivity().getPackageName()), 1);
+        mWSoundId = mSound.load(getActivity(), getResources().getIdentifier("w",
+                "raw", getActivity().getPackageName()), 1);
+        mXSoundId = mSound.load(getActivity(), getResources().getIdentifier("x",
+                "raw", getActivity().getPackageName()), 1);
+        mYSoundId = mSound.load(getActivity(), getResources().getIdentifier("y",
+                "raw", getActivity().getPackageName()), 1);
+        mZSoundId = mSound.load(getActivity(), getResources().getIdentifier("z",
+                "raw", getActivity().getPackageName()), 1);
     }
 
     private void initLetterMap() {
@@ -360,9 +429,92 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         }
     }
 
-    private void sayLetter(final String letter) {
+    private void sayLetter(String letter) {
         setupVoice();
-        mTTS.speak(letterSound(letter.toLowerCase()), TextToSpeech.QUEUE_FLUSH, null, "");
+
+        letter = letter.toLowerCase();
+        switch (letter) {
+            case "a":
+                mSound.play(mASoundId, 1, 1, 10, 0, 1);
+                break;
+            case "b":
+                mSound.play(mBSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "c":
+                mSound.play(mCSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "d":
+                mSound.play(mDSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "e":
+                mSound.play(mESoundId, 1, 1, 10, 0, 1);
+                break;
+            case "f":
+                mSound.play(mFSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "g":
+                mSound.play(mGSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "h":
+                mSound.play(mHSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "i":
+                mSound.play(mISoundId, 1, 1, 10, 0, 1);
+                break;
+            case "j":
+                mSound.play(mJSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "k":
+                mSound.play(mKSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "l":
+                mSound.play(mLSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "m":
+                mSound.play(mMSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "n":
+                mSound.play(mNSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "o":
+                mSound.play(mOSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "p":
+                mSound.play(mPSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "q":
+                mSound.play(mQSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "r":
+                mSound.play(mRSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "s":
+                mSound.play(mSSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "t":
+                mSound.play(mTSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "u":
+                mSound.play(mUSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "v":
+                mSound.play(mVSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "w":
+                mSound.play(mWSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "x":
+                mSound.play(mXSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "y":
+                mSound.play(mYSoundId, 1, 1, 10, 0, 1);
+                break;
+            case "z":
+                mSound.play(mZSoundId, 1, 1, 10, 0, 1);
+                break;
+        }
+
+//        mTTS.speak(letterSound(letter.toLowerCase()), TextToSpeech.QUEUE_FLUSH, null, "");
 
         /*if we use alexas voice
 
@@ -533,5 +685,14 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private String letterSound(String letter) {
         return mLetterMap.get(letter);
+    }
+
+    @Override
+    public void onLoadComplete(final SoundPool soundPool, final int sampleId, final int status) {
+
+        mSoundsLoaded++;
+        if (mSoundsLoaded == 26) {
+            mProgress.dismiss();
+        }
     }
 }
