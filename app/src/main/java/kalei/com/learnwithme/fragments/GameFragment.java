@@ -15,6 +15,7 @@ import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
@@ -96,6 +97,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private int mASoundId, mBSoundId, mCSoundId, mDSoundId, mESoundId, mFSoundId, mGSoundId, mHSoundId, mISoundId, mJSoundId, mKSoundId, mLSoundId, mMSoundId, mNSoundId, mOSoundId, mPSoundId, mQSoundId, mRSoundId, mSSoundId, mTSoundId, mUSoundId, mVSoundId, mWSoundId, mXSoundId, mYSoundId, mZSoundId;
     private ProgressDialog mProgress;
+    private float mPitch;
 
     @Override
     public void onAttach(Context context) {
@@ -117,12 +119,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     @Override
     public void onCreate(Bundle b) {
-        mProgress = new ProgressDialog(getActivity());
-        mProgress.setTitle("Loading sounds");
-        mProgress.setMessage("loading..");
-        mProgress.setCancelable(false);
-        mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgress.show();
         super.onCreate(b);
         Bundle args = getArguments();
         if (args != null) {
@@ -136,6 +132,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
         setRetainInstance(true);
 //        mLetterCheckedMap = new HashMap<String, Boolean>();
+        mPitch = 1.f;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             AudioAttributes audioAttrib = new AudioAttributes.Builder()
@@ -147,8 +144,17 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
             mSound = new SoundPool(6, AudioManager.STREAM_MUSIC, 0);
         }
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                loadSounds();
+            }
+        };
+        handler.postDelayed(r, 100);
+
         mSound.setOnLoadCompleteListener(this);
-        loadSounds();
+
         mCorrectSoundId = mSound.load(getActivity(), R.raw.correct, 1);
         mAwwSoundId = mSound.load(getActivity(), R.raw.aww, 1);
         mLetterList = new ArrayList<>();
@@ -286,6 +292,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
         mPlayButton.setEnabled(false);
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
+        mListenButton.setEnabled(false);
         mLeftArrow = (ImageView) mRootView.findViewById(R.id.left_arrow_img);
         if (mIndex == 0) {
             mLeftArrow.setVisibility(View.GONE);
@@ -341,6 +348,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 //        }
 
         mCanContinue = true;
+        mListenButton.setEnabled(mCanContinue);
         setUnderLineText();
 
         enableSpeakButton();
@@ -386,6 +394,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 //        mWordTextView.setText(Html.fromHtml("<a href='#'>c</a><a href='#'>a</a><a href='#'>t</a>"));
         String word = mWordsArray[mIndex];
         if (word != null) {
+            if (mWordTextView == null) {
+                initViews();
+            }
             mWordTextView.setText(word);
             loadLetterMap(word);
         }
@@ -430,87 +441,87 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private void sayLetter(String letter) {
-        setupVoice();
+//        setupVoice();
 
         letter = letter.toLowerCase();
         switch (letter) {
             case "a":
-                mSound.play(mASoundId, 1, 1, 10, 0, 1);
+                mSound.play(mASoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "b":
-                mSound.play(mBSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mBSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "c":
-                mSound.play(mCSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mCSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "d":
-                mSound.play(mDSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mDSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "e":
-                mSound.play(mESoundId, 1, 1, 10, 0, 1);
+                mSound.play(mESoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "f":
-                mSound.play(mFSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mFSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "g":
-                mSound.play(mGSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mGSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "h":
-                mSound.play(mHSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mHSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "i":
-                mSound.play(mISoundId, 1, 1, 10, 0, 1);
+                mSound.play(mISoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "j":
-                mSound.play(mJSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mJSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "k":
-                mSound.play(mKSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mKSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "l":
-                mSound.play(mLSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mLSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "m":
-                mSound.play(mMSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mMSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "n":
-                mSound.play(mNSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mNSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "o":
-                mSound.play(mOSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mOSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "p":
-                mSound.play(mPSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mPSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "q":
-                mSound.play(mQSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mQSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "r":
-                mSound.play(mRSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mRSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "s":
-                mSound.play(mSSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mSSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "t":
-                mSound.play(mTSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mTSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "u":
-                mSound.play(mUSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mUSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "v":
-                mSound.play(mVSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mVSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "w":
-                mSound.play(mWSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mWSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "x":
-                mSound.play(mXSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mXSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "y":
-                mSound.play(mYSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mYSoundId, 1, 1, 10, 0, mPitch);
                 break;
             case "z":
-                mSound.play(mZSoundId, 1, 1, 10, 0, 1);
+                mSound.play(mZSoundId, 1, 1, 10, 0, mPitch);
                 break;
         }
 
@@ -594,10 +605,10 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                     String resultText = isAnswerGoodEnough ? "good job you said it right" :
                             "sorry the word was:" + mWordsArray[mIndex] + " you said:" + result.get(0);
                     if (isAnswerGoodEnough) {
-                        mSound.play(mCorrectSoundId, 1, 1, 10, 0, 1);
+                        mSound.play(mCorrectSoundId, 1, 1, 10, 0, mPitch);
                         loadNextWord();
                     } else {
-                        mSound.play(mAwwSoundId, 1, 1, 10, 0, 1);
+                        mSound.play(mAwwSoundId, 1, 1, 10, 0, mPitch);
                     }
                 }
             }
@@ -608,6 +619,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private void loadNextWord() {
         mIndex++;
         mLeftArrow.setVisibility(mIndex > 0 ? View.VISIBLE : View.GONE);
+        mListenButton.setEnabled(false);
         setupWord();
     }
 
@@ -690,9 +702,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     @Override
     public void onLoadComplete(final SoundPool soundPool, final int sampleId, final int status) {
 
-        mSoundsLoaded++;
-        if (mSoundsLoaded == 26) {
-            mProgress.dismiss();
-        }
+//        mSoundsLoaded++;
+//        if (mSoundsLoaded == 26) {
+//            mProgress.dismiss();
+//        }
     }
 }

@@ -21,6 +21,7 @@ public class MainActivity extends LearnWithMeActivity {
 
         if (BuildConfig.DEBUG) {
             startActivity();
+            return;
         }
         // Create the next level button, which tries to show an interstitial when clicked.
         // Create the InterstitialAd and set the adUnitId (defined in values/strings.xml).
@@ -31,31 +32,31 @@ public class MainActivity extends LearnWithMeActivity {
     protected void newInterstitialAd() {
         InterstitialAd interstitialAd = new InterstitialAd(this);
 
-        if (!BuildConfig.DEBUG) {
-            interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+//        if (!BuildConfig.DEBUG) {
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
-            interstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    mInterstitialAd.show();
-                }
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                mInterstitialAd.show();
+            }
 
-                @Override
-                public void onAdFailedToLoad(int errorCode) {
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
 
-                    //start new activity  show menu
-                    startActivity();
-                }
+                //start new activity  show menu
+                startActivity();
+            }
 
-                @Override
-                public void onAdClosed() {
-                    // Proceed to the next level.
-                    //start new activity  show menu
-                    startActivity();
-                }
-            });
-            mInterstitialAd = interstitialAd;
-        }
+            @Override
+            public void onAdClosed() {
+                // Proceed to the next level.
+                //start new activity  show menu
+                startActivity();
+            }
+        });
+        mInterstitialAd = interstitialAd;
+//        }
     }
 
     private void startActivity() {

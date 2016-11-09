@@ -54,11 +54,11 @@ public class LearnWithMeActivity extends FragmentActivity {
     }
 
     protected void loadInterstitial() {
-        if (!BuildConfig.DEBUG) {
-            // Disable the next level button and load the ad.
-            AdRequest adRequest = new AdRequest.Builder()
-                    .setRequestAgent("android_studio:ad_template").build();
-            mInterstitialAd.loadAd(adRequest);
-        }
+//        if (!BuildConfig.DEBUG) {
+        // Disable the next level button and load the ad.
+        AdRequest adRequest = new AdRequest.Builder()
+                .setRequestAgent("android_studio:ad_template").build();
+        mInterstitialAd.loadAd(adRequest);
+//        }
     }
 }
