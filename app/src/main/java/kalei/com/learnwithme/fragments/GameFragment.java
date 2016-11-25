@@ -58,6 +58,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private final String TAG = this.getClass().getSimpleName();
 
     private Typeface custom_font;
+
     private String[] mWordsArray = {"one", "two", "bat", "cat", "mat", "pat", "rat", "sat", "can", "fan", "man", "pan", "ran", "tan", "cap", "map", "nap",
             "tap", "sap", "bag", "wag", "tag", "rag", "dam", "ham", "jam", "ram", "yam", "bad", "dad", "had", "mad", "jar", "tar", "dry", "my,", "all", "are",
             "ask",
@@ -87,6 +88,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private static final int REQ_CODE_SPEECH_INPUT = 1234;
     private LearnWithMeAdListener adListener;
     private HashMap<String, String> mLetterMap;
+    private HashMap<String, String> mJapaneseLetterMap;
     //    private HashMap<String, Boolean> mLetterCheckedMap;
     private ArrayList<Letter> mLetterList;
     private SpannableString mContent;
@@ -693,6 +695,84 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         if (mTTS != null) {
             mTTS.shutdown();
         }
+    }
+
+    private void loadJapaneseMap() {
+        mJapaneseLetterMap = new HashMap<>();
+        mJapaneseLetterMap.put("a", "\u3042");
+        mJapaneseLetterMap.put("i", "\u3044");
+        mJapaneseLetterMap.put("oo", "\u3046");
+        mJapaneseLetterMap.put("eh", "\u3048");
+        mJapaneseLetterMap.put("oh", "\u304a");
+        mJapaneseLetterMap.put("ka", "\u304b");
+        mJapaneseLetterMap.put("ga", "\u304c");
+        mJapaneseLetterMap.put("ki", "\u304d");
+        mJapaneseLetterMap.put("gi", "\u304e");
+        mJapaneseLetterMap.put("ku", "\u304f");
+        mJapaneseLetterMap.put("gu", "\u3050");
+        mJapaneseLetterMap.put("ke", "\u3051");
+        mJapaneseLetterMap.put("ge", "\u3052");
+        mJapaneseLetterMap.put("ko", "\u3053");
+        mJapaneseLetterMap.put("go", "\u3054");
+        mJapaneseLetterMap.put("sa", "\u3055");
+        mJapaneseLetterMap.put("za", "\u3056");
+        mJapaneseLetterMap.put("shi", "\u3057");
+        mJapaneseLetterMap.put("gee", "\u3058");
+        mJapaneseLetterMap.put("su", "\u3059");
+        mJapaneseLetterMap.put("zu", "\u305a");
+        mJapaneseLetterMap.put("se", "\u305b");
+        mJapaneseLetterMap.put("ze", "\u305c");
+        mJapaneseLetterMap.put("so", "\u305d");
+        mJapaneseLetterMap.put("zo", "\u305e");
+        mJapaneseLetterMap.put("ta", "\u305f");
+        mJapaneseLetterMap.put("da", "\u3060");
+        mJapaneseLetterMap.put("ti", "\u3061");
+        mJapaneseLetterMap.put("di", "\u3062");
+        mJapaneseLetterMap.put("tu", "\u3064");
+        mJapaneseLetterMap.put("du", "\u3065");
+        mJapaneseLetterMap.put("te", "\u3066");
+        mJapaneseLetterMap.put("de", "\u3067");
+        mJapaneseLetterMap.put("to", "\u3068");
+        mJapaneseLetterMap.put("do", "\u3069");
+        mJapaneseLetterMap.put("na", "\u306a");
+        mJapaneseLetterMap.put("ni", "\u306b");
+        mJapaneseLetterMap.put("nu", "\u306c");
+        mJapaneseLetterMap.put("ne", "\u306d");
+        mJapaneseLetterMap.put("no", "\u306e");
+        mJapaneseLetterMap.put("ha", "\u306f");
+        mJapaneseLetterMap.put("ba", "\u3070");
+        mJapaneseLetterMap.put("pa", "\u3071");
+        mJapaneseLetterMap.put("hi", "\u3072");
+        mJapaneseLetterMap.put("bi", "\u3073");
+        mJapaneseLetterMap.put("pi", "\u3074");
+        mJapaneseLetterMap.put("hu", "\u3075");
+        mJapaneseLetterMap.put("bu", "\u3076");
+        mJapaneseLetterMap.put("pu", "\u3077");
+        mJapaneseLetterMap.put("he", "\u3078");
+        mJapaneseLetterMap.put("be", "\u3079");
+        mJapaneseLetterMap.put("pe", "\u307a");
+        mJapaneseLetterMap.put("ho", "\u307b");
+        mJapaneseLetterMap.put("bo", "\u307c");
+        mJapaneseLetterMap.put("po", "\u307d");
+        mJapaneseLetterMap.put("ma", "\u307e");
+        mJapaneseLetterMap.put("mi", "\u307f");
+        mJapaneseLetterMap.put("mu", "\u3080");
+        mJapaneseLetterMap.put("me", "\u3081");
+        mJapaneseLetterMap.put("mo", "\u3082");
+        mJapaneseLetterMap.put("ya", "\u3084");
+        mJapaneseLetterMap.put("yu", "\u3086");
+        mJapaneseLetterMap.put("yo", "\u3088");
+        mJapaneseLetterMap.put("ra", "\u3089");
+        mJapaneseLetterMap.put("ri", "\u308a");
+        mJapaneseLetterMap.put("ru", "\u308b");
+        mJapaneseLetterMap.put("re", "\u308c");
+        mJapaneseLetterMap.put("ro", "\u308d");
+        mJapaneseLetterMap.put("wa", "\u308f");
+        mJapaneseLetterMap.put("wi", "\u3090");
+        mJapaneseLetterMap.put("we", "\u3091");
+        mJapaneseLetterMap.put("wo", "\u3091");
+        mJapaneseLetterMap.put("n", "\u3093");
+        mJapaneseLetterMap.put("vu", "\u3094");
     }
 
     private String letterSound(String letter) {
