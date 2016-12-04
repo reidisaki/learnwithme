@@ -74,7 +74,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
                 i.putExtra("IS_LETTER", true);
                 startActivity(i);
                 break;
-            case R.id.katana_button:
+            case R.id.katakana_button:
                 i = new Intent(getActivity(), GameActivity.class);
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.katakana));
                 i.putExtra("IS_ENGLISH", false);

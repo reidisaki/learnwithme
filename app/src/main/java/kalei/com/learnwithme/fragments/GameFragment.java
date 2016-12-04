@@ -645,7 +645,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private void loadNextWord() {
         mIndex++;
         mEnglishWord.setVisibility(View.GONE);
-        Log.i(TAG, "next word index: " + mIndex + "japan max words: " + mUnicodeArray.length);
         mLeftArrow.setVisibility(mIndex > 0 ? View.VISIBLE : View.GONE);
 
         //tod: handle other unicode languages
@@ -703,31 +702,33 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         int currentIndex = mWordsArray.length - 1, randomIndex;
         String temporaryValue;
 
-        // While there remain elements to shuffle...
-        while (0 < currentIndex) {
+        if (mIsEnglish) {
+            // While there remain elements to shuffle...
+            while (0 < currentIndex) {
 
-            // Pick a remaining element...
-            randomIndex = (int) Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
+                // Pick a remaining element...
+                randomIndex = (int) Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
 
-            // And swap it with the current element.
-            temporaryValue = mWordsArray[currentIndex];
-            mWordsArray[currentIndex] = mWordsArray[randomIndex];
-            mWordsArray[randomIndex] = temporaryValue;
-        }
+                // And swap it with the current element.
+                temporaryValue = mWordsArray[currentIndex];
+                mWordsArray[currentIndex] = mWordsArray[randomIndex];
+                mWordsArray[randomIndex] = temporaryValue;
+            }
+        } else {
+            //Randomize japanese words
+            currentIndex = mUnicodeArray.length - 1;
+            while (0 < currentIndex) {
 
-        //Randomize japanese words
-        currentIndex = mUnicodeArray.length - 1;
-        while (0 < currentIndex) {
+                // Pick a remaining element...
+                randomIndex = (int) Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
 
-            // Pick a remaining element...
-            randomIndex = (int) Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = mUnicodeArray[currentIndex];
-            mUnicodeArray[currentIndex] = mUnicodeArray[randomIndex];
-            mUnicodeArray[randomIndex] = temporaryValue;
+                // And swap it with the current element.
+                temporaryValue = mUnicodeArray[currentIndex];
+                mUnicodeArray[currentIndex] = mUnicodeArray[randomIndex];
+                mUnicodeArray[randomIndex] = temporaryValue;
+            }
         }
     }
 
