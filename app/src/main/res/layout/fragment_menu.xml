@@ -41,6 +41,10 @@
                 android:id="@+id/japanese_button"
                 android:layout_height="wrap_content"
                 android:text="@string/hiragana"/>
+        <Button android:layout_width="match_parent"
+                android:id="@+id/katakana_button"
+                android:layout_height="wrap_content"
+                android:text="@string/katakana"/>
         <Button android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/five_letter_words_label"/>

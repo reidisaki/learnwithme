@@ -21,6 +21,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
     private Button threeLetterButton;
     private Button kindergartenButton;
     private Button japaneseButton;
+    private Button katakanaButton;
 
     public static MenuFragment newInstance() {
         MenuFragment fragment = new MenuFragment();
@@ -39,9 +40,11 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
         threeLetterButton = (Button) rootView.findViewById(R.id.three_letter_button);
         kindergartenButton = (Button) rootView.findViewById(R.id.kindergarten_button);
         japaneseButton = (Button) rootView.findViewById(R.id.japanese_button);
+        katakanaButton = (Button) rootView.findViewById(R.id.katakana_button);
         threeLetterButton.setOnClickListener(this);
         kindergartenButton.setOnClickListener(this);
         japaneseButton.setOnClickListener(this);
+        katakanaButton.setOnClickListener(this);
 //        mSettingsImage = (ImageView) rootView.findViewById(R.id.settings_image);
         return rootView;
     }
@@ -67,6 +70,13 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
             case R.id.japanese_button:
                 i = new Intent(getActivity(), GameActivity.class);
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.hiragana));
+                i.putExtra("IS_ENGLISH", false);
+                i.putExtra("IS_LETTER", true);
+                startActivity(i);
+                break;
+            case R.id.katana_button:
+                i = new Intent(getActivity(), GameActivity.class);
+                i.putExtra(getString(R.string.game_type_label), getString(R.string.katakana));
                 i.putExtra("IS_ENGLISH", false);
                 i.putExtra("IS_LETTER", true);
                 startActivity(i);

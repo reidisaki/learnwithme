@@ -294,10 +294,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private void enableSpeakButton() {
-        //dont require non english words to be parsed by english parser
-        if (!mIsEnglish) {
-            mCanContinue = true;
-        }
         if (mCanContinue) {
             mPlayButton.setEnabled(true);
         }
@@ -307,8 +303,11 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
         mPlayButton.setEnabled(false);
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
+
         if (mIsEnglish) {
             mListenButton.setEnabled(false);
+        } else {
+            mPlayButton.setText("Next");
         }
         mLeftArrow = (ImageView) mRootView.findViewById(R.id.left_arrow_img);
         if (mIndex == 0) {
@@ -351,6 +350,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                     mWordTextView.setText(mContent);
                     sayLetter(letter);
                 } else {
+                    mWordTextView.setText(mUnicodeArray[mIndex]);
                     sayWord();
                 }
                 return false;
@@ -424,7 +424,11 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.play_btn:
-                promptSpeechInput();
+                if (mIsEnglish) {
+                    promptSpeechInput();
+                } else {
+                    loadNextWord();
+                }
                 break;
             case R.id.speak_btn:
                 sayWord();
@@ -443,7 +447,11 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         if (mIndex > 0) {
             mIndex--;
             mLeftArrow.setVisibility(mIndex > 1 ? View.VISIBLE : View.GONE);
-            setupWord();
+            if (mIsEnglish) {
+                setupWord();
+            } else {
+                setupUnicodeLetter();
+            }
         }
     }
 
@@ -574,6 +582,8 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             mTTS.speak(mUnicodeArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");
             mEnglishWord.setVisibility(View.VISIBLE);
             mEnglishWord.setText(mJapaneseLetterMap.get(mUnicodeArray[mIndex]));
+            mCanContinue = true;
+            enableSpeakButton();
         }
     }
 
@@ -639,7 +649,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mLeftArrow.setVisibility(mIndex > 0 ? View.VISIBLE : View.GONE);
 
         //tod: handle other unicode languages
-        if(mIsEnglish) {
+        if (mIsEnglish) {
             mListenButton.setEnabled(false);
             setupWord();
         } else {
@@ -666,11 +676,12 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         if (mIndex >= mUnicodeArray.length) {
             mIndex = 0;
         }
-        mCanContinue = false;
 
         //weird hack i need to show every x number of words
         mWordTextView.setText(mUnicodeArray[mIndex] + " ");
         Log.i(TAG, "setup word: " + mWordTextView.getText().toString() + " index: " + mIndex + " real value: " + mUnicodeArray[mIndex]);
+        mCanContinue = false;
+        mPlayButton.setEnabled(false);
     }
 
     private void showInterstitial() {

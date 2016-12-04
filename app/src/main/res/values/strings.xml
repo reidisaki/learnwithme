@@ -23,5 +23,6 @@
 
     <string name="banner_ad_unit_id">ca-app-pub-5747146577301976/8570621645</string>
     <string name="hiragana">hiragana</string>
+    <string name="katakana">katakana</string>
 
 </resources>
