@@ -10,6 +10,14 @@
             android:layout_alignParentLeft="true"
             android:src="@drawable/left_arrow"
             android:id="@+id/left_arrow_img"/>
+
+    <TextView android:id="@+id/english_word"
+              android:layout_above="@+id/button_layout"
+              android:visibility="gone"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerHorizontal="true"
+              android:gravity="center"/>
     <me.grantland.widget.AutofitTextView
             android:id="@+id/word_txt"
             android:layout_above="@+id/button_layout"

@@ -1,6 +1,5 @@
 package kalei.com.learnwithme.fragments;
 
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +8,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.Image;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Build;
@@ -31,16 +28,17 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
 import kalei.com.learnwithme.models.Letter;
@@ -55,7 +53,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private static final float THRESHOLD_CORRECT_PERCENTAGE = .75f;
     private static final float PITCH_VALUE = 1.1f;
     private static final String CARTOON_FONT = "LDFComicSans.ttf";
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String IS_ENGLISH = "IS_ENGLISH";
+    private static final String IS_LETTER = "IS_LETTER";
+    private final String TAG = "lwm";//this.getClass().getSimpleName();
 
     private Typeface custom_font;
 
@@ -81,7 +81,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private Button mPlayButton, mListenButton;
     private AutofitTextView mWordTextView;
-    private int mIndex = 0, mCorrectSoundId, mAwwSoundId, mSoundsLoaded = 0;
+    private int mIndex = 0, mCorrectSoundId, mAwwSoundId = 0;
     private TextToSpeech mTTS;
     private View mRootView;
     private ImageView mLeftArrow, mRightArrow;
@@ -89,17 +89,19 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private LearnWithMeAdListener adListener;
     private HashMap<String, String> mLetterMap;
     private HashMap<String, String> mJapaneseLetterMap;
-    //    private HashMap<String, Boolean> mLetterCheckedMap;
     private ArrayList<Letter> mLetterList;
+    private String[] mUnicodeArray;
     private SpannableString mContent;
     private Boolean mCanContinue = false;
     private static String GAME_TYPE = "game_type_label";
     private String mGameType;
     private SoundPool mSound;
+    private TextView mEnglishWord;
 
     private int mASoundId, mBSoundId, mCSoundId, mDSoundId, mESoundId, mFSoundId, mGSoundId, mHSoundId, mISoundId, mJSoundId, mKSoundId, mLSoundId, mMSoundId, mNSoundId, mOSoundId, mPSoundId, mQSoundId, mRSoundId, mSSoundId, mTSoundId, mUSoundId, mVSoundId, mWSoundId, mXSoundId, mYSoundId, mZSoundId;
-    private ProgressDialog mProgress;
     private float mPitch;
+    private boolean mIsEnglish;
+    private boolean mIsLetter;
 
     @Override
     public void onAttach(Context context) {
@@ -122,18 +124,25 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
+
         Bundle args = getArguments();
         if (args != null) {
             mGameType = args.getString(GAME_TYPE);
+            mIsEnglish = args.getBoolean(IS_ENGLISH, true);
+            mIsLetter = args.getBoolean(IS_LETTER, false);
+            Log.i(TAG, "gameType: " + mGameType);
             switch (mGameType) {
                 case "kindergarten":
                     mWordsArray = mKindergartenArray;
+                    break;
+                case "hiragana":
+                    loadJapaneseArray();
+                    loadJapaneseMap();
                     break;
             }
         }
 
         setRetainInstance(true);
-//        mLetterCheckedMap = new HashMap<String, Boolean>();
         mPitch = 1.f;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
@@ -285,6 +294,10 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private void enableSpeakButton() {
+        //dont require non english words to be parsed by english parser
+        if (!mIsEnglish) {
+            mCanContinue = true;
+        }
         if (mCanContinue) {
             mPlayButton.setEnabled(true);
         }
@@ -294,7 +307,9 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mPlayButton = (Button) mRootView.findViewById(R.id.play_btn);
         mPlayButton.setEnabled(false);
         mListenButton = (Button) mRootView.findViewById(R.id.speak_btn);
-        mListenButton.setEnabled(false);
+        if (mIsEnglish) {
+            mListenButton.setEnabled(false);
+        }
         mLeftArrow = (ImageView) mRootView.findViewById(R.id.left_arrow_img);
         if (mIndex == 0) {
             mLeftArrow.setVisibility(View.GONE);
@@ -304,35 +319,40 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mLeftArrow.setOnClickListener(this);
         mWordTextView = (AutofitTextView) mRootView.findViewById(R.id.word_txt);
         mWordTextView.setTypeface(custom_font);
-        mWordTextView.setText(mWordsArray[mIndex]);
+        mEnglishWord = (TextView) mRootView.findViewById(R.id.english_word);
+        mWordTextView.setText(mIsEnglish ? mWordsArray[mIndex] : mUnicodeArray[mIndex]);
 
         mWordTextView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(final View v, final MotionEvent event) {
 
-                String word = mWordsArray[mIndex];
-                DisplayMetrics metrics = getResources().getDisplayMetrics();
-                int screenWidth = metrics.widthPixels;
-                int wordTotalWidth = mWordTextView.getMeasuredWidth();
-                int sectionWidth = wordTotalWidth / word.length();
-                int wordPadding = (screenWidth - wordTotalWidth) / 2;
+                //only english words can be spelled and sounded out
+                if (mIsEnglish) {
+                    String word = mWordsArray[mIndex];
+                    DisplayMetrics metrics = getResources().getDisplayMetrics();
+                    int screenWidth = metrics.widthPixels;
+                    int wordTotalWidth = mWordTextView.getMeasuredWidth();
+                    int sectionWidth = wordTotalWidth / word.length();
+                    int wordPadding = (screenWidth - wordTotalWidth) / 2;
 
-                String letter = "a";
-                mContent = new SpannableString(word);
-                for (int i = 0; i < word.length(); i++) {
-                    int j = i;
-                    j++;
-                    if (event.getRawX() < (sectionWidth * j) + wordPadding) {
-                        //its in section i
-                        letter = word.split("(?!^)")[i];
-                        checkForLetterInMap(letter, i);
-                        break;
+                    String letter = "a";
+                    mContent = new SpannableString(word);
+                    for (int i = 0; i < word.length(); i++) {
+                        int j = i;
+                        j++;
+                        if (event.getRawX() < (sectionWidth * j) + wordPadding) {
+                            //its in section i
+                            letter = word.split("(?!^)")[i];
+                            checkForLetterInMap(letter, i);
+                            break;
+                        }
                     }
+
+                    mWordTextView.setText(mContent);
+                    sayLetter(letter);
+                } else {
+                    sayWord();
                 }
-
-                mWordTextView.setText(mContent);
-                sayLetter(letter);
-
                 return false;
             }
         });
@@ -341,13 +361,11 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private void checkForLetterInMap(final String letter, int index) {
+
         Letter letterObj = mLetterList.get(index);
         if (letterObj.getLetterCharacter().equals(letter)) {
             letterObj.setUnderlined(true);
         }
-//        if (mLetterCheckedMap.get(letter) != null) {
-//            mLetterCheckedMap.put(letter, true);
-//        }
 
         mCanContinue = true;
         mListenButton.setEnabled(mCanContinue);
@@ -367,18 +385,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                 mContent.setSpan(new UnderlineSpan(), index, index + 1, 0);
             }
         }
-//        Iterator it = mLetterCheckedMap.entrySet().iterator();
-//        int i = 0;
-//        while (it.hasNext()) {
-//            i++;
-//            Map.Entry pair = (Map.Entry) it.next();
-//            if (!(boolean) pair.getValue()) {
-//                mCanContinue = false;
-//            } else {
-//                int index = mWordsArray[mIndex].indexOf(pair.getKey().toString());
-//                mContent.setSpan(new UnderlineSpan(), index, index + 1, 0);
-//            }
-//        }
         return mContent;
     }
 
@@ -388,31 +394,29 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         if (savedInstanceState == null) {
             mRootView = inflater.inflate(R.layout.fragment_game, container, false);
             randomizeWords();
-//        ((MainActivity) getActivity()).getActionBar().hide();
             initViews();
             mRootView.setBackgroundColor(generateRandomColor());
         }
-
-//        mWordTextView.setText(Html.fromHtml("<a href='#'>c</a><a href='#'>a</a><a href='#'>t</a>"));
-        String word = mWordsArray[mIndex];
+        String word = mIsEnglish ? mWordsArray[mIndex] : mUnicodeArray[mIndex];
         if (word != null) {
             if (mWordTextView == null) {
                 initViews();
             }
-            mWordTextView.setText(word);
-            loadLetterMap(word);
+            if (mIsEnglish) {
+                loadLetterMap(word);
+            } else {
+                mWordTextView.setText(word);
+            }
         }
         return mRootView;
     }
 
     private void loadLetterMap(String s) {
-//        mLetterCheckedMap = new HashMap<>();
         mLetterList = new ArrayList<>();
         int index = 0;
         for (String letter : s.split("(?!^)")) {
             mLetterList.add(new Letter(letter, false, index));
             index++;
-//            mLetterCheckedMap.put(letter, false);
         }
     }
 
@@ -429,6 +433,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
                 getPrevWord();
                 break;
             case R.id.right_arrow_img:
+                Log.i(TAG, "right arrow clicked");
                 loadNextWord();
                 break;
         }
@@ -443,7 +448,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private void sayLetter(String letter) {
-//        setupVoice();
 
         letter = letter.toLowerCase();
         switch (letter) {
@@ -560,7 +564,17 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private void sayWord() {
         setupVoice();
-        mTTS.speak(mWordsArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");
+
+        //todo: handle other languages
+        if (mIsEnglish) {
+            mTTS.setLanguage(Locale.ENGLISH);
+            mTTS.speak(mWordsArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");
+        } else {
+            mTTS.setLanguage(Locale.JAPANESE);
+            mTTS.speak(mUnicodeArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");
+            mEnglishWord.setVisibility(View.VISIBLE);
+            mEnglishWord.setText(mJapaneseLetterMap.get(mUnicodeArray[mIndex]));
+        }
     }
 
     /**
@@ -620,20 +634,24 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private void loadNextWord() {
         mIndex++;
+        mEnglishWord.setVisibility(View.GONE);
+        Log.i(TAG, "next word index: " + mIndex + "japan max words: " + mUnicodeArray.length);
         mLeftArrow.setVisibility(mIndex > 0 ? View.VISIBLE : View.GONE);
-        mListenButton.setEnabled(false);
-        setupWord();
+
+        //tod: handle other unicode languages
+        if(mIsEnglish) {
+            mListenButton.setEnabled(false);
+            setupWord();
+        } else {
+            mListenButton.setEnabled(true);
+            setupUnicodeLetter();
+        }
     }
 
     private void setupWord() {
         //show interstitial every 10 times
-        if (mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
-            adListener.createAndShowAd();
-        }
-        if (mIndex >= mWordsArray.length) {
-            mIndex = 0;
-        }
-        mRootView.setBackgroundColor(generateRandomColor());
+        showInterstitial();
+
         String word = mWordsArray[mIndex];
 
         mCanContinue = false;
@@ -642,12 +660,40 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mPlayButton.setEnabled(false);
     }
 
+    private void setupUnicodeLetter() {
+        showInterstitial();
+
+        if (mIndex >= mUnicodeArray.length) {
+            mIndex = 0;
+        }
+        mCanContinue = false;
+
+        //weird hack i need to show every x number of words
+        mWordTextView.setText(mUnicodeArray[mIndex] + " ");
+        Log.i(TAG, "setup word: " + mWordTextView.getText().toString() + " index: " + mIndex + " real value: " + mUnicodeArray[mIndex]);
+    }
+
+    private void showInterstitial() {
+        //bypass ads for dev build
+        if (BuildConfig.DEBUG) {
+            return;
+        }
+        //show interstitial every 10 times
+        if (mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
+            adListener.createAndShowAd();
+        }
+        if (mIndex >= mWordsArray.length) {
+            mIndex = 0;
+        }
+        mRootView.setBackgroundColor(generateRandomColor());
+    }
+
     public void randomizeWords() {
-        int currentIndex = mWordsArray.length, randomIndex;
+        int currentIndex = mWordsArray.length - 1, randomIndex;
         String temporaryValue;
 
         // While there remain elements to shuffle...
-        while (0 != currentIndex) {
+        while (0 < currentIndex) {
 
             // Pick a remaining element...
             randomIndex = (int) Math.floor(Math.random() * currentIndex);
@@ -657,6 +703,20 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             temporaryValue = mWordsArray[currentIndex];
             mWordsArray[currentIndex] = mWordsArray[randomIndex];
             mWordsArray[randomIndex] = temporaryValue;
+        }
+
+        //Randomize japanese words
+        currentIndex = mUnicodeArray.length - 1;
+        while (0 < currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = (int) Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = mUnicodeArray[currentIndex];
+            mUnicodeArray[currentIndex] = mUnicodeArray[randomIndex];
+            mUnicodeArray[randomIndex] = temporaryValue;
         }
     }
 
@@ -677,16 +737,15 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     public boolean answerIsCloseEnough(String answer, String theirAnswer) {
-        String[] answerArray = answer.split("(?!^)");
         String[] theirAnswerArray = theirAnswer.split("(?!^)");
         int numLettersFound = 0;
-        for (int i = 0; i < theirAnswerArray.length; i++) {
-            if (answer.contains(theirAnswerArray[i])) {
+        for (String aTheirAnswerArray : theirAnswerArray) {
+            if (answer.contains(aTheirAnswerArray)) {
                 numLettersFound++;
             }
         }
         double percentage = (double) numLettersFound / theirAnswer.length();
-        return percentage >= THRESHOLD_CORRECT_PERCENTAGE ? true : false;
+        return percentage >= THRESHOLD_CORRECT_PERCENTAGE;
     }
 
     @Override
@@ -699,80 +758,165 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 
     private void loadJapaneseMap() {
         mJapaneseLetterMap = new HashMap<>();
-        mJapaneseLetterMap.put("a", "\u3042");
-        mJapaneseLetterMap.put("i", "\u3044");
-        mJapaneseLetterMap.put("oo", "\u3046");
-        mJapaneseLetterMap.put("eh", "\u3048");
-        mJapaneseLetterMap.put("oh", "\u304a");
-        mJapaneseLetterMap.put("ka", "\u304b");
-        mJapaneseLetterMap.put("ga", "\u304c");
-        mJapaneseLetterMap.put("ki", "\u304d");
-        mJapaneseLetterMap.put("gi", "\u304e");
-        mJapaneseLetterMap.put("ku", "\u304f");
-        mJapaneseLetterMap.put("gu", "\u3050");
-        mJapaneseLetterMap.put("ke", "\u3051");
-        mJapaneseLetterMap.put("ge", "\u3052");
-        mJapaneseLetterMap.put("ko", "\u3053");
-        mJapaneseLetterMap.put("go", "\u3054");
-        mJapaneseLetterMap.put("sa", "\u3055");
-        mJapaneseLetterMap.put("za", "\u3056");
-        mJapaneseLetterMap.put("shi", "\u3057");
-        mJapaneseLetterMap.put("gee", "\u3058");
-        mJapaneseLetterMap.put("su", "\u3059");
-        mJapaneseLetterMap.put("zu", "\u305a");
-        mJapaneseLetterMap.put("se", "\u305b");
-        mJapaneseLetterMap.put("ze", "\u305c");
-        mJapaneseLetterMap.put("so", "\u305d");
-        mJapaneseLetterMap.put("zo", "\u305e");
-        mJapaneseLetterMap.put("ta", "\u305f");
-        mJapaneseLetterMap.put("da", "\u3060");
-        mJapaneseLetterMap.put("ti", "\u3061");
-        mJapaneseLetterMap.put("di", "\u3062");
-        mJapaneseLetterMap.put("tu", "\u3064");
-        mJapaneseLetterMap.put("du", "\u3065");
-        mJapaneseLetterMap.put("te", "\u3066");
-        mJapaneseLetterMap.put("de", "\u3067");
-        mJapaneseLetterMap.put("to", "\u3068");
-        mJapaneseLetterMap.put("do", "\u3069");
-        mJapaneseLetterMap.put("na", "\u306a");
-        mJapaneseLetterMap.put("ni", "\u306b");
-        mJapaneseLetterMap.put("nu", "\u306c");
-        mJapaneseLetterMap.put("ne", "\u306d");
-        mJapaneseLetterMap.put("no", "\u306e");
-        mJapaneseLetterMap.put("ha", "\u306f");
-        mJapaneseLetterMap.put("ba", "\u3070");
-        mJapaneseLetterMap.put("pa", "\u3071");
-        mJapaneseLetterMap.put("hi", "\u3072");
-        mJapaneseLetterMap.put("bi", "\u3073");
-        mJapaneseLetterMap.put("pi", "\u3074");
-        mJapaneseLetterMap.put("hu", "\u3075");
-        mJapaneseLetterMap.put("bu", "\u3076");
-        mJapaneseLetterMap.put("pu", "\u3077");
-        mJapaneseLetterMap.put("he", "\u3078");
-        mJapaneseLetterMap.put("be", "\u3079");
-        mJapaneseLetterMap.put("pe", "\u307a");
-        mJapaneseLetterMap.put("ho", "\u307b");
-        mJapaneseLetterMap.put("bo", "\u307c");
-        mJapaneseLetterMap.put("po", "\u307d");
-        mJapaneseLetterMap.put("ma", "\u307e");
-        mJapaneseLetterMap.put("mi", "\u307f");
-        mJapaneseLetterMap.put("mu", "\u3080");
-        mJapaneseLetterMap.put("me", "\u3081");
-        mJapaneseLetterMap.put("mo", "\u3082");
-        mJapaneseLetterMap.put("ya", "\u3084");
-        mJapaneseLetterMap.put("yu", "\u3086");
-        mJapaneseLetterMap.put("yo", "\u3088");
-        mJapaneseLetterMap.put("ra", "\u3089");
-        mJapaneseLetterMap.put("ri", "\u308a");
-        mJapaneseLetterMap.put("ru", "\u308b");
-        mJapaneseLetterMap.put("re", "\u308c");
-        mJapaneseLetterMap.put("ro", "\u308d");
-        mJapaneseLetterMap.put("wa", "\u308f");
-        mJapaneseLetterMap.put("wi", "\u3090");
-        mJapaneseLetterMap.put("we", "\u3091");
-        mJapaneseLetterMap.put("wo", "\u3091");
-        mJapaneseLetterMap.put("n", "\u3093");
-        mJapaneseLetterMap.put("vu", "\u3094");
+        mJapaneseLetterMap.put("\u3042", "a");
+        mJapaneseLetterMap.put("\u3044", "i");
+        mJapaneseLetterMap.put("\u3046", "oo");
+        mJapaneseLetterMap.put("\u3048", "eh");
+        mJapaneseLetterMap.put("\u304a", "oh");
+        mJapaneseLetterMap.put("\u304b", "ka");
+        mJapaneseLetterMap.put("\u304c", "ga");
+        mJapaneseLetterMap.put("\u304d", "ki");
+        mJapaneseLetterMap.put("\u304e", "gi");
+        mJapaneseLetterMap.put("\u304f", "ku");
+        mJapaneseLetterMap.put("\u3050", "gu");
+        mJapaneseLetterMap.put("\u3051", "ke");
+        mJapaneseLetterMap.put("\u3052", "ge");
+        mJapaneseLetterMap.put("\u3053", "ko");
+        mJapaneseLetterMap.put("\u3054", "go");
+        mJapaneseLetterMap.put("\u3055", "sa");
+        mJapaneseLetterMap.put("\u3056", "za");
+        mJapaneseLetterMap.put("\u3057", "shi");
+        mJapaneseLetterMap.put("\u3058", "gee");
+        mJapaneseLetterMap.put("\u3059", "su");
+        mJapaneseLetterMap.put("\u305a", "zu");
+        mJapaneseLetterMap.put("\u305b", "se");
+        mJapaneseLetterMap.put("\u305c", "ze");
+        mJapaneseLetterMap.put("\u305d", "so");
+        mJapaneseLetterMap.put("\u305e", "zo");
+        mJapaneseLetterMap.put("\u305f", "ta");
+        mJapaneseLetterMap.put("\u3060", "da");
+        mJapaneseLetterMap.put("\u3061", "ti");
+        mJapaneseLetterMap.put("\u3062", "di");
+        mJapaneseLetterMap.put("\u3064", "tsu");
+        mJapaneseLetterMap.put("\u3065", "du");
+        mJapaneseLetterMap.put("\u3066", "te");
+        mJapaneseLetterMap.put("\u3067", "de");
+        mJapaneseLetterMap.put("\u3068", "to");
+        mJapaneseLetterMap.put("\u3069", "do");
+        mJapaneseLetterMap.put("\u306a", "na");
+        mJapaneseLetterMap.put("\u306b", "ni");
+        mJapaneseLetterMap.put("\u306c", "nu");
+        mJapaneseLetterMap.put("\u306d", "ne");
+        mJapaneseLetterMap.put("\u306e", "no");
+        mJapaneseLetterMap.put("\u306f", "ha");
+        mJapaneseLetterMap.put("\u3070", "ba");
+        mJapaneseLetterMap.put("\u3071", "pa");
+        mJapaneseLetterMap.put("\u3072", "hi");
+        mJapaneseLetterMap.put("\u3073", "bi");
+        mJapaneseLetterMap.put("\u3074", "pi");
+        mJapaneseLetterMap.put("\u3075", "fu");
+        mJapaneseLetterMap.put("\u3076", "bu");
+        mJapaneseLetterMap.put("\u3077", "pu");
+        mJapaneseLetterMap.put("\u3078", "he");
+        mJapaneseLetterMap.put("\u3079", "be");
+        mJapaneseLetterMap.put("\u307a", "pe");
+        mJapaneseLetterMap.put("\u307b", "ho");
+        mJapaneseLetterMap.put("\u307c", "bo");
+        mJapaneseLetterMap.put("\u307d", "po");
+        mJapaneseLetterMap.put("\u307e", "ma");
+        mJapaneseLetterMap.put("\u307f", "mi");
+        mJapaneseLetterMap.put("\u3080", "mu");
+        mJapaneseLetterMap.put("\u3081", "me");
+        mJapaneseLetterMap.put("\u3082", "mo");
+        mJapaneseLetterMap.put("\u3084", "ya");
+        mJapaneseLetterMap.put("\u3086", "yu");
+        mJapaneseLetterMap.put("\u3088", "yo");
+        mJapaneseLetterMap.put("\u3089", "ra");
+        mJapaneseLetterMap.put("\u308a", "ri");
+        mJapaneseLetterMap.put("\u308b", "ru");
+        mJapaneseLetterMap.put("\u308c", "re");
+        mJapaneseLetterMap.put("\u308d", "ro");
+        mJapaneseLetterMap.put("\u308f", "wa");
+        mJapaneseLetterMap.put("\u3090", "wi");
+        mJapaneseLetterMap.put("\u3091", "we");
+        mJapaneseLetterMap.put("\u3092", "wo");
+        mJapaneseLetterMap.put("\u3093", "n");
+        mJapaneseLetterMap.put("\u3094", "vu");
+
+//        mJapaneseLetterMap = new HashMap<>();
+//        mJapaneseLetterMap.put("a", "\u3042");
+//        mJapaneseLetterMap.put("i", "\u3044");
+//        mJapaneseLetterMap.put("oo", "\u3046");
+//        mJapaneseLetterMap.put("eh", "\u3048");
+//        mJapaneseLetterMap.put("oh", "\u304a");
+//        mJapaneseLetterMap.put("ka", "\u304b");
+//        mJapaneseLetterMap.put("ga", "\u304c");
+//        mJapaneseLetterMap.put("ki", "\u304d");
+//        mJapaneseLetterMap.put("gi", "\u304e");
+//        mJapaneseLetterMap.put("ku", "\u304f");
+//        mJapaneseLetterMap.put("gu", "\u3050");
+//        mJapaneseLetterMap.put("ke", "\u3051");
+//        mJapaneseLetterMap.put("ge", "\u3052");
+//        mJapaneseLetterMap.put("ko", "\u3053");
+//        mJapaneseLetterMap.put("go", "\u3054");
+//        mJapaneseLetterMap.put("sa", "\u3055");
+//        mJapaneseLetterMap.put("za", "\u3056");
+//        mJapaneseLetterMap.put("shi", "\u3057");
+//        mJapaneseLetterMap.put("gee", "\u3058");
+//        mJapaneseLetterMap.put("su", "\u3059");
+//        mJapaneseLetterMap.put("zu", "\u305a");
+//        mJapaneseLetterMap.put("se", "\u305b");
+//        mJapaneseLetterMap.put("ze", "\u305c");
+//        mJapaneseLetterMap.put("so", "\u305d");
+//        mJapaneseLetterMap.put("zo", "\u305e");
+//        mJapaneseLetterMap.put("ta", "\u305f");
+//        mJapaneseLetterMap.put("da", "\u3060");
+//        mJapaneseLetterMap.put("ti", "\u3061");
+//        mJapaneseLetterMap.put("di", "\u3062");
+//        mJapaneseLetterMap.put("tu", "\u3064");
+//        mJapaneseLetterMap.put("du", "\u3065");
+//        mJapaneseLetterMap.put("te", "\u3066");
+//        mJapaneseLetterMap.put("de", "\u3067");
+//        mJapaneseLetterMap.put("to", "\u3068");
+//        mJapaneseLetterMap.put("do", "\u3069");
+//        mJapaneseLetterMap.put("na", "\u306a");
+//        mJapaneseLetterMap.put("ni", "\u306b");
+//        mJapaneseLetterMap.put("nu", "\u306c");
+//        mJapaneseLetterMap.put("ne", "\u306d");
+//        mJapaneseLetterMap.put("no", "\u306e");
+//        mJapaneseLetterMap.put("ha", "\u306f");
+//        mJapaneseLetterMap.put("ba", "\u3070");
+//        mJapaneseLetterMap.put("pa", "\u3071");
+//        mJapaneseLetterMap.put("hi", "\u3072");
+//        mJapaneseLetterMap.put("bi", "\u3073");
+//        mJapaneseLetterMap.put("pi", "\u3074");
+//        mJapaneseLetterMap.put("hu", "\u3075");
+//        mJapaneseLetterMap.put("bu", "\u3076");
+//        mJapaneseLetterMap.put("pu", "\u3077");
+//        mJapaneseLetterMap.put("he", "\u3078");
+//        mJapaneseLetterMap.put("be", "\u3079");
+//        mJapaneseLetterMap.put("pe", "\u307a");
+//        mJapaneseLetterMap.put("ho", "\u307b");
+//        mJapaneseLetterMap.put("bo", "\u307c");
+//        mJapaneseLetterMap.put("po", "\u307d");
+//        mJapaneseLetterMap.put("ma", "\u307e");
+//        mJapaneseLetterMap.put("mi", "\u307f");
+//        mJapaneseLetterMap.put("mu", "\u3080");
+//        mJapaneseLetterMap.put("me", "\u3081");
+//        mJapaneseLetterMap.put("mo", "\u3082");
+//        mJapaneseLetterMap.put("ya", "\u3084");
+//        mJapaneseLetterMap.put("yu", "\u3086");
+//        mJapaneseLetterMap.put("yo", "\u3088");
+//        mJapaneseLetterMap.put("ra", "\u3089");
+//        mJapaneseLetterMap.put("ri", "\u308a");
+//        mJapaneseLetterMap.put("ru", "\u308b");
+//        mJapaneseLetterMap.put("re", "\u308c");
+//        mJapaneseLetterMap.put("ro", "\u308d");
+//        mJapaneseLetterMap.put("wa", "\u308f");
+//        mJapaneseLetterMap.put("wi", "\u3090");
+//        mJapaneseLetterMap.put("we", "\u3091");
+//        mJapaneseLetterMap.put("wo", "\u3091");
+//        mJapaneseLetterMap.put("n", "\u3093");
+//        mJapaneseLetterMap.put("vu", "\u3094");
+    }
+
+    private void loadJapaneseArray() {
+        mUnicodeArray = new String[]{"\u3042", "\u3044", "\u3046", "\u3048", "\u304a", "\u304b", "\u304c", "\u304d", "\u304e", "\u304f", "\u3050",
+                "\u3051", "\u3052", "\u3053", "\u3054", "\u3055", "\u3056", "\u3057", "\u3058", "\u3059", "\u305a", "\u305b", "\u305c", "\u305d",
+                "\u305e", "\u305f", "\u3060", "\u3061", "\u3062", "\u3064", "\u3065", "\u3066", "\u3067", "\u3068", "\u3069", "\u306a", "\u306b",
+                "\u306c", "\u306d", "\u306e", "\u306f", "\u3070", "\u3071", "\u3072", "\u3073", "\u3074", "\u3075", "\u3076", "\u3077", "\u3078",
+                "\u3079", "\u307a", "\u307b", "\u307c", "\u307d", "\u307e", "\u307f", "\u3080", "\u3081", "\u3082", "\u3084", "\u3086", "\u3088",
+                "\u3089", "\u308a", "\u308b", "\u308c", "\u308d", "\u308f", "\u3090", "\u3091", "\u3091", "\u3093", "\u3094"};
     }
 
     private String letterSound(String letter) {

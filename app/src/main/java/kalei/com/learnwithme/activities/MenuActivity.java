@@ -3,6 +3,7 @@ package kalei.com.learnwithme.activities;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.support.annotation.Nullable;
@@ -40,7 +41,7 @@ public class MenuActivity extends LearnWithMeActivity {
 //        adView.loadAd(adOptions); // Retrieves an ad on background thread
 //
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        if (mAdView != null) {
+        if (mAdView != null && !BuildConfig.DEBUG) {
             String android_id = Secure.getString(this.getContentResolver(),
                     Secure.ANDROID_ID);
 //            AdRequest adRequest = new AdRequest.Builder().addTestDevice(android_id).build();

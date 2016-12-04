@@ -20,6 +20,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
 
     private Button threeLetterButton;
     private Button kindergartenButton;
+    private Button japaneseButton;
 
     public static MenuFragment newInstance() {
         MenuFragment fragment = new MenuFragment();
@@ -37,9 +38,10 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
         View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
         threeLetterButton = (Button) rootView.findViewById(R.id.three_letter_button);
         kindergartenButton = (Button) rootView.findViewById(R.id.kindergarten_button);
+        japaneseButton = (Button) rootView.findViewById(R.id.japanese_button);
         threeLetterButton.setOnClickListener(this);
         kindergartenButton.setOnClickListener(this);
-
+        japaneseButton.setOnClickListener(this);
 //        mSettingsImage = (ImageView) rootView.findViewById(R.id.settings_image);
         return rootView;
     }
@@ -51,11 +53,22 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
             case R.id.three_letter_button:
                 i = new Intent(getActivity(), GameActivity.class);
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.three_letter_words_label));
+                i.putExtra("IS_ENGLISH", true);
+                i.putExtra("IS_LETTER", false);
                 startActivity(i);
                 break;
             case R.id.kindergarten_button:
                 i = new Intent(getActivity(), GameActivity.class);
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.kindergarten));
+                i.putExtra("IS_ENGLISH", true);
+                i.putExtra("IS_LETTER", false);
+                startActivity(i);
+                break;
+            case R.id.japanese_button:
+                i = new Intent(getActivity(), GameActivity.class);
+                i.putExtra(getString(R.string.game_type_label), getString(R.string.hiragana));
+                i.putExtra("IS_ENGLISH", false);
+                i.putExtra("IS_LETTER", true);
                 startActivity(i);
                 break;
         }

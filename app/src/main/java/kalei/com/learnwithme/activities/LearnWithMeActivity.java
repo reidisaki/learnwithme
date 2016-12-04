@@ -27,7 +27,9 @@ public class LearnWithMeActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
     }
 
     protected void newInterstitialAd() {
@@ -54,11 +56,11 @@ public class LearnWithMeActivity extends FragmentActivity {
     }
 
     protected void loadInterstitial() {
-//        if (!BuildConfig.DEBUG) {
-        // Disable the next level button and load the ad.
-        AdRequest adRequest = new AdRequest.Builder()
-                .setRequestAgent("android_studio:ad_template").build();
-        mInterstitialAd.loadAd(adRequest);
-//        }
+        if (!BuildConfig.DEBUG) {
+            // Disable the next level button and load the ad.
+            AdRequest adRequest = new AdRequest.Builder()
+                    .setRequestAgent("android_studio:ad_template").build();
+            mInterstitialAd.loadAd(adRequest);
+        }
     }
 }
