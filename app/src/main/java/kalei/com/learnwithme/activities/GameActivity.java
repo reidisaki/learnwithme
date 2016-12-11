@@ -10,13 +10,17 @@ import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
 import kalei.com.learnwithme.fragments.GameFragment;
+import kalei.com.learnwithme.fragments.MenuFragment;
+import kalei.com.learnwithme.fragments.ReadGameFragment;
+import kalei.com.learnwithme.fragments.SpellGameFragment;
 
 /**
  * Created by risaki on 8/28/16.
  */
 public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdListener {
 
-    public GameFragment mGameFragment;
+    public ReadGameFragment mReadGameFragment;
+    public SpellGameFragment mSpellGameFragment;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -24,9 +28,16 @@ public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdLi
         setContentView(R.layout.activity_game);
         Bundle args = getIntent().getExtras();
         if (args != null) {
-            mGameFragment = GameFragment.newInstance(args.getString(getString(R.string.game_type_label)));
-            mGameFragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mGameFragment).commit();
+            //
+            if (args.getBoolean(MenuFragment.READ_GAME_MODE, true)) {
+                mReadGameFragment = ReadGameFragment.newInstance(args.getString(getString(R.string.game_type_label)));
+                mReadGameFragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mReadGameFragment).commit();
+            } else {
+//                mSpellGameFragment = SpellGameFragment.newInstance(args.getString(getString(R.string.game_type_label)));
+//                mSpellGameFragment.setArguments(args);
+//                getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mSpellGameFragment).commit();
+            }
         }
         loadAds();
     }

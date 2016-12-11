@@ -43,7 +43,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/speak_button_text"/>
         <Button android:layout_width="wrap_content"
-                android:id="@+id/speak_btn"
+                android:id="@+id/listen_btn"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:text="@string/listen_button_text"/>

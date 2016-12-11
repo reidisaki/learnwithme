@@ -25,6 +25,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
     private Button japaneseButton;
     private Button katakanaButton;
     private boolean isRead = false;
+    public static String READ_GAME_MODE = "MODE";
     private RadioButton mSpellButton, mReadButton;
 
     public static MenuFragment newInstance() {
@@ -71,7 +72,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.three_letter_words_label));
                 i.putExtra("IS_ENGLISH", true);
                 i.putExtra("IS_LETTER", false);
-                i.putExtra("MODE", isReadMode());
+                i.putExtra(READ_GAME_MODE, isReadMode());
                 startActivity(i);
                 break;
             case R.id.kindergarten_button:
@@ -79,7 +80,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.kindergarten));
                 i.putExtra("IS_ENGLISH", true);
                 i.putExtra("IS_LETTER", false);
-                i.putExtra("MODE", isReadMode());
+                i.putExtra(READ_GAME_MODE, isReadMode());
                 startActivity(i);
                 break;
             //todo: Japanese only read mode for now
@@ -88,7 +89,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.hiragana));
                 i.putExtra("IS_ENGLISH", false);
                 i.putExtra("IS_LETTER", true);
-                i.putExtra("MODE", true);
+                i.putExtra(READ_GAME_MODE, true);
                 startActivity(i);
                 break;
             case R.id.katakana_button:
@@ -96,7 +97,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
                 i.putExtra(getString(R.string.game_type_label), getString(R.string.katakana));
                 i.putExtra("IS_ENGLISH", false);
                 i.putExtra("IS_LETTER", true);
-                i.putExtra("MODE", true);
+                i.putExtra(READ_GAME_MODE, true);
                 startActivity(i);
                 break;
         }

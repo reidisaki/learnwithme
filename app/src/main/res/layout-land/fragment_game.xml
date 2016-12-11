@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/speak_button_text"/>
         <Button android:layout_width="match_parent"
-                android:id="@+id/speak_btn"
+                android:id="@+id/listen_btn"
                 android:layout_weight="1"
                 android:padding="30dp"
                 android:layout_height="wrap_content"
