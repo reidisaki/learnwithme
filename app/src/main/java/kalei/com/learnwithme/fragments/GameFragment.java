@@ -55,6 +55,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
     private static final String CARTOON_FONT = "LDFComicSans.ttf";
     private static final String IS_ENGLISH = "IS_ENGLISH";
     private static final String IS_LETTER = "IS_LETTER";
+    private static boolean mIsReadMode = false;
     private final String TAG = "lwm";//this.getClass().getSimpleName();
 
     private Typeface custom_font;
@@ -130,6 +131,7 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
             mGameType = args.getString(GAME_TYPE);
             mIsEnglish = args.getBoolean(IS_ENGLISH, true);
             mIsLetter = args.getBoolean(IS_LETTER, false);
+            mIsReadMode = args.getBoolean("MODE", false);
             Log.i(TAG, "gameType: " + mGameType);
             switch (mGameType) {
                 case "kindergarten":
@@ -171,92 +173,6 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
         mLetterList = new ArrayList<>();
         initLetterMap();
         custom_font = Typeface.createFromAsset(getResources().getAssets(), CARTOON_FONT);
-    }
-
-    private void loadSounds() {
-
-        mASoundId = mSound.load(getActivity(), getResources().getIdentifier("a",
-                "raw", getActivity().getPackageName()), 1);
-        mBSoundId = mSound.load(getActivity(), getResources().getIdentifier("b",
-                "raw", getActivity().getPackageName()), 1);
-        mCSoundId = mSound.load(getActivity(), getResources().getIdentifier("c",
-                "raw", getActivity().getPackageName()), 1);
-        mDSoundId = mSound.load(getActivity(), getResources().getIdentifier("d",
-                "raw", getActivity().getPackageName()), 1);
-        mESoundId = mSound.load(getActivity(), getResources().getIdentifier("e",
-                "raw", getActivity().getPackageName()), 1);
-        mFSoundId = mSound.load(getActivity(), getResources().getIdentifier("f",
-                "raw", getActivity().getPackageName()), 1);
-        mGSoundId = mSound.load(getActivity(), getResources().getIdentifier("g",
-                "raw", getActivity().getPackageName()), 1);
-        mHSoundId = mSound.load(getActivity(), getResources().getIdentifier("h",
-                "raw", getActivity().getPackageName()), 1);
-        mISoundId = mSound.load(getActivity(), getResources().getIdentifier("i",
-                "raw", getActivity().getPackageName()), 1);
-        mJSoundId = mSound.load(getActivity(), getResources().getIdentifier("j",
-                "raw", getActivity().getPackageName()), 1);
-        mKSoundId = mSound.load(getActivity(), getResources().getIdentifier("k",
-                "raw", getActivity().getPackageName()), 1);
-        mLSoundId = mSound.load(getActivity(), getResources().getIdentifier("l",
-                "raw", getActivity().getPackageName()), 1);
-        mMSoundId = mSound.load(getActivity(), getResources().getIdentifier("m",
-                "raw", getActivity().getPackageName()), 1);
-        mNSoundId = mSound.load(getActivity(), getResources().getIdentifier("n",
-                "raw", getActivity().getPackageName()), 1);
-        mOSoundId = mSound.load(getActivity(), getResources().getIdentifier("o",
-                "raw", getActivity().getPackageName()), 1);
-        mPSoundId = mSound.load(getActivity(), getResources().getIdentifier("p",
-                "raw", getActivity().getPackageName()), 1);
-        mQSoundId = mSound.load(getActivity(), getResources().getIdentifier("q",
-                "raw", getActivity().getPackageName()), 1);
-        mRSoundId = mSound.load(getActivity(), getResources().getIdentifier("r",
-                "raw", getActivity().getPackageName()), 1);
-        mSSoundId = mSound.load(getActivity(), getResources().getIdentifier("s",
-                "raw", getActivity().getPackageName()), 1);
-        mTSoundId = mSound.load(getActivity(), getResources().getIdentifier("t",
-                "raw", getActivity().getPackageName()), 1);
-        mUSoundId = mSound.load(getActivity(), getResources().getIdentifier("u",
-                "raw", getActivity().getPackageName()), 1);
-        mVSoundId = mSound.load(getActivity(), getResources().getIdentifier("v",
-                "raw", getActivity().getPackageName()), 1);
-        mWSoundId = mSound.load(getActivity(), getResources().getIdentifier("w",
-                "raw", getActivity().getPackageName()), 1);
-        mXSoundId = mSound.load(getActivity(), getResources().getIdentifier("x",
-                "raw", getActivity().getPackageName()), 1);
-        mYSoundId = mSound.load(getActivity(), getResources().getIdentifier("y",
-                "raw", getActivity().getPackageName()), 1);
-        mZSoundId = mSound.load(getActivity(), getResources().getIdentifier("z",
-                "raw", getActivity().getPackageName()), 1);
-    }
-
-    private void initLetterMap() {
-        mLetterMap = new HashMap<>();
-        mLetterMap.put("a", "ahh");
-        mLetterMap.put("b", "bay");
-        mLetterMap.put("c", "ka");
-        mLetterMap.put("d", "dah");
-        mLetterMap.put("e", "ae");
-        mLetterMap.put("f", "f");
-        mLetterMap.put("g", "gah");
-        mLetterMap.put("h", "ha");
-        mLetterMap.put("i", "the letter i");
-        mLetterMap.put("j", "gee");
-        mLetterMap.put("k", "ka");
-        mLetterMap.put("l", "ll");
-        mLetterMap.put("m", "maw");
-        mLetterMap.put("n", "naw");
-        mLetterMap.put("o", "ooh");
-        mLetterMap.put("p", "pah");
-        mLetterMap.put("q", "kwa");
-        mLetterMap.put("r", "ra");
-        mLetterMap.put("s", "saw");
-        mLetterMap.put("t", "tah");
-        mLetterMap.put("u", "ooo");
-        mLetterMap.put("v", "vay");
-        mLetterMap.put("w", "wuh");
-        mLetterMap.put("x", "ex");
-        mLetterMap.put("y", "yu");
-        mLetterMap.put("z", "za");
     }
 
     @Override
@@ -942,5 +858,91 @@ public class GameFragment extends LearnWithMeFragment implements OnClickListener
 //        if (mSoundsLoaded == 26) {
 //            mProgress.dismiss();
 //        }
+    }
+
+    private void loadSounds() {
+
+        mASoundId = mSound.load(getActivity(), getResources().getIdentifier("a",
+                "raw", getActivity().getPackageName()), 1);
+        mBSoundId = mSound.load(getActivity(), getResources().getIdentifier("b",
+                "raw", getActivity().getPackageName()), 1);
+        mCSoundId = mSound.load(getActivity(), getResources().getIdentifier("c",
+                "raw", getActivity().getPackageName()), 1);
+        mDSoundId = mSound.load(getActivity(), getResources().getIdentifier("d",
+                "raw", getActivity().getPackageName()), 1);
+        mESoundId = mSound.load(getActivity(), getResources().getIdentifier("e",
+                "raw", getActivity().getPackageName()), 1);
+        mFSoundId = mSound.load(getActivity(), getResources().getIdentifier("f",
+                "raw", getActivity().getPackageName()), 1);
+        mGSoundId = mSound.load(getActivity(), getResources().getIdentifier("g",
+                "raw", getActivity().getPackageName()), 1);
+        mHSoundId = mSound.load(getActivity(), getResources().getIdentifier("h",
+                "raw", getActivity().getPackageName()), 1);
+        mISoundId = mSound.load(getActivity(), getResources().getIdentifier("i",
+                "raw", getActivity().getPackageName()), 1);
+        mJSoundId = mSound.load(getActivity(), getResources().getIdentifier("j",
+                "raw", getActivity().getPackageName()), 1);
+        mKSoundId = mSound.load(getActivity(), getResources().getIdentifier("k",
+                "raw", getActivity().getPackageName()), 1);
+        mLSoundId = mSound.load(getActivity(), getResources().getIdentifier("l",
+                "raw", getActivity().getPackageName()), 1);
+        mMSoundId = mSound.load(getActivity(), getResources().getIdentifier("m",
+                "raw", getActivity().getPackageName()), 1);
+        mNSoundId = mSound.load(getActivity(), getResources().getIdentifier("n",
+                "raw", getActivity().getPackageName()), 1);
+        mOSoundId = mSound.load(getActivity(), getResources().getIdentifier("o",
+                "raw", getActivity().getPackageName()), 1);
+        mPSoundId = mSound.load(getActivity(), getResources().getIdentifier("p",
+                "raw", getActivity().getPackageName()), 1);
+        mQSoundId = mSound.load(getActivity(), getResources().getIdentifier("q",
+                "raw", getActivity().getPackageName()), 1);
+        mRSoundId = mSound.load(getActivity(), getResources().getIdentifier("r",
+                "raw", getActivity().getPackageName()), 1);
+        mSSoundId = mSound.load(getActivity(), getResources().getIdentifier("s",
+                "raw", getActivity().getPackageName()), 1);
+        mTSoundId = mSound.load(getActivity(), getResources().getIdentifier("t",
+                "raw", getActivity().getPackageName()), 1);
+        mUSoundId = mSound.load(getActivity(), getResources().getIdentifier("u",
+                "raw", getActivity().getPackageName()), 1);
+        mVSoundId = mSound.load(getActivity(), getResources().getIdentifier("v",
+                "raw", getActivity().getPackageName()), 1);
+        mWSoundId = mSound.load(getActivity(), getResources().getIdentifier("w",
+                "raw", getActivity().getPackageName()), 1);
+        mXSoundId = mSound.load(getActivity(), getResources().getIdentifier("x",
+                "raw", getActivity().getPackageName()), 1);
+        mYSoundId = mSound.load(getActivity(), getResources().getIdentifier("y",
+                "raw", getActivity().getPackageName()), 1);
+        mZSoundId = mSound.load(getActivity(), getResources().getIdentifier("z",
+                "raw", getActivity().getPackageName()), 1);
+    }
+
+    private void initLetterMap() {
+        mLetterMap = new HashMap<>();
+        mLetterMap.put("a", "ahh");
+        mLetterMap.put("b", "bay");
+        mLetterMap.put("c", "ka");
+        mLetterMap.put("d", "dah");
+        mLetterMap.put("e", "ae");
+        mLetterMap.put("f", "f");
+        mLetterMap.put("g", "gah");
+        mLetterMap.put("h", "ha");
+        mLetterMap.put("i", "the letter i");
+        mLetterMap.put("j", "gee");
+        mLetterMap.put("k", "ka");
+        mLetterMap.put("l", "ll");
+        mLetterMap.put("m", "maw");
+        mLetterMap.put("n", "naw");
+        mLetterMap.put("o", "ooh");
+        mLetterMap.put("p", "pah");
+        mLetterMap.put("q", "kwa");
+        mLetterMap.put("r", "ra");
+        mLetterMap.put("s", "saw");
+        mLetterMap.put("t", "tah");
+        mLetterMap.put("u", "ooo");
+        mLetterMap.put("v", "vay");
+        mLetterMap.put("w", "wuh");
+        mLetterMap.put("x", "ex");
+        mLetterMap.put("y", "yu");
+        mLetterMap.put("z", "za");
     }
 }
