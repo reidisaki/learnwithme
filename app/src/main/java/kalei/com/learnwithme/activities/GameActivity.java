@@ -34,9 +34,9 @@ public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdLi
                 mReadGameFragment.setArguments(args);
                 getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mReadGameFragment).commit();
             } else {
-//                mSpellGameFragment = SpellGameFragment.newInstance(args.getString(getString(R.string.game_type_label)));
-//                mSpellGameFragment.setArguments(args);
-//                getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mSpellGameFragment).commit();
+                mSpellGameFragment = SpellGameFragment.newInstance(args.getString(getString(R.string.game_type_label)));
+                mSpellGameFragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mSpellGameFragment).commit();
             }
         }
         loadAds();

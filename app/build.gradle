@@ -15,6 +15,9 @@ android {
         targetSdkVersion 23
         versionCode 3
         versionName "1.0"
+
+        resValue 'string', 'version_name', versionName
+
     }
     buildTypes {
         release {
