@@ -38,7 +38,7 @@ import kalei.com.learnwithme.models.Letter;
  */
 public abstract class GameFragment extends LearnWithMeFragment implements OnClickListener, OnLoadCompleteListener {
     protected static final int NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN = 10;
-    protected static final float SPEECH_RATE = 1f;
+    protected static final float SPEECH_RATE = .8f;
     protected static final float THRESHOLD_CORRECT_PERCENTAGE = .75f;
     protected static final float PITCH_VALUE = 1.1f;
     protected static final String CARTOON_FONT = "LDFComicSans.ttf";
@@ -198,6 +198,8 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     }
 
     protected abstract int setLayout();
+    protected abstract void correctAnswer();
+    protected abstract void wrongAnswer();
 
     protected void loadLetterMap(String s) {
         mLetterList = new ArrayList<>();

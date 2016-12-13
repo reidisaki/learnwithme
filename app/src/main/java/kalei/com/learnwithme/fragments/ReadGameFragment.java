@@ -353,15 +353,25 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
                     String resultText = isAnswerGoodEnough ? "good job you said it right" :
                             "sorry the word was:" + mWordsArray[mIndex] + " you said:" + result.get(0);
                     if (isAnswerGoodEnough) {
-                        mSound.play(mCorrectSoundId, 1, 1, 10, 0, mPitch);
-                        loadNextWord();
+                        correctAnswer();
                     } else {
-                        mSound.play(mAwwSoundId, 1, 1, 10, 0, mPitch);
+                        wrongAnswer();
                     }
                 }
             }
             break;
         }
+    }
+
+    @Override
+    protected void correctAnswer() {
+        mSound.play(mCorrectSoundId, 1, 1, 10, 0, mPitch);
+        loadNextWord();
+    }
+
+    @Override
+    protected void wrongAnswer() {
+        mSound.play(mAwwSoundId, 1, 1, 10, 0, mPitch);
     }
 
     public void loadNextWord() {

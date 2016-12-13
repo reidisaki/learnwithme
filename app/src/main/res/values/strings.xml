@@ -19,6 +19,7 @@
     <string name="kindergarten">kindergarten</string>
     <string name="listen_button_text">Listen to Word</string>
     <string name="speak_button_text">Say Word</string>
+    <string name="submit_button_text">Check spelling</string>
     <string name="game_type_label">game_type_label</string>
 
     <string name="banner_ad_unit_id">ca-app-pub-5747146577301976/8570621645</string>
