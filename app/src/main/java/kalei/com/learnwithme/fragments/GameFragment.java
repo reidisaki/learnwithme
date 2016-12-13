@@ -252,7 +252,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         //todo: handle other languages
         if (mIsEnglish) {
             mTTS.setLanguage(Locale.ENGLISH);
-            mTTS.speak(mWordsArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");
+            mTTS.speak(mWordsArray[mIndex].toLowerCase(), TextToSpeech.QUEUE_FLUSH, null, "");
         } else {
             mTTS.setLanguage(Locale.JAPANESE);
             mTTS.speak(mUnicodeArray[mIndex], TextToSpeech.QUEUE_FLUSH, null, "");

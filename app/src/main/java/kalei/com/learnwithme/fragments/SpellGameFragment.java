@@ -4,6 +4,7 @@ import com.aigestudio.wheelpicker.WheelPicker;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,8 @@ public class SpellGameFragment extends GameFragment {
     LinearLayout mFlContainer;
     Animation mFadeIn;
     List<Character> mEnglishLetterList = new ArrayList<>(Arrays
-            .asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-                    'z'));
+            .asList('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                    'Z'));
 
     public static SpellGameFragment newInstance(String gameType) {
         SpellGameFragment fragment = new SpellGameFragment();
@@ -88,6 +89,7 @@ public class SpellGameFragment extends GameFragment {
         switch (v.getId()) {
             case R.id.submit_btn:
                 if (mIsEnglish) {
+                    Log.i("lwm", "word is: " + mCurrentWord);
                     //only spelling english words for now
                     if (checkSpelling()) {
                         correctAnswer();
@@ -113,7 +115,7 @@ public class SpellGameFragment extends GameFragment {
             word += mEnglishLetterList.get(((WheelPicker) mFlContainer.getChildAt(i)).getCurrentItemPosition()).toString();
         }
 
-        return word.equals(mCurrentWord);
+        return word.toUpperCase().equals(mCurrentWord.toUpperCase());
     }
 
     @Override

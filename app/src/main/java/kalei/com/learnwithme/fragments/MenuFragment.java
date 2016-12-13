@@ -98,7 +98,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
                 i.putExtra("IS_ENGLISH", false);
                 i.putExtra("IS_LETTER", true);
                 i.putExtra(READ_GAME_MODE, true);
-                startActivity(i);
+//                startActivity(i);
                 break;
         }
     }
