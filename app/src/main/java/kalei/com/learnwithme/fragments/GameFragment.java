@@ -1,6 +1,8 @@
 package kalei.com.learnwithme.fragments;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -38,9 +40,9 @@ import kalei.com.learnwithme.models.Letter;
  */
 public abstract class GameFragment extends LearnWithMeFragment implements OnClickListener, OnLoadCompleteListener {
     protected static final int NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN = 10;
-    protected static final float SPEECH_RATE = .8f;
+    protected static final float SPEECH_RATE = 1f;
     protected static final float THRESHOLD_CORRECT_PERCENTAGE = .75f;
-    protected static final float PITCH_VALUE = 1.1f;
+    protected static final float PITCH_VALUE = 1f;
     protected static final String CARTOON_FONT = "LDFComicSans.ttf";
     protected static final String IS_ENGLISH = "IS_ENGLISH";
     protected static final String IS_LETTER = "IS_LETTER";
@@ -226,6 +228,22 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     public abstract void loadNextWord();
     public abstract void getPrevWord();
 
+    /**
+     * Ask the current default engine to launch the matching INSTALL_TTS_DATA activity so the required TTS files are properly installed.
+     */
+    private void installVoiceData() {
+        Intent intent = new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage("com.google.android.tts"/*replace with the package name of the target TTS engine*/);
+        try {
+            Log.v(TAG, "Installing voice data: " + intent.toUri(0));
+            //todo: start activty for result and handle the new data. 
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Log.e(TAG, "Failed to install TTS data, no acitivty found for " + intent + ")");
+        }
+    }
+
     protected void setupVoice() {
         mTTS.setSpeechRate(SPEECH_RATE);
         Set<Voice> voices = mTTS.getVoices();
@@ -233,11 +251,13 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         if (voices != null) {
             for (Voice v : voices) {
                 //could use a british voice here
-//            if (v.getLocale().equals(Locale.getDefault()) && v.getQuality() == Voice.QUALITY_HIGH) {
-//                Log.i("reid", v.toString());
-//            }
+                //todo: make users download a language pack when they open the app
+                if (v.getLocale().equals(Locale.getDefault()) && v.getQuality() == Voice.QUALITY_HIGH) {
+                    Log.i("reid", v.toString());
+//                mTTS.setVoice(v);
+                }
                 if (v.getQuality() == Voice.QUALITY_HIGH && v.getLatency() == Voice.LATENCY_LOW && v.getLocale().equals(Locale.getDefault())) {
-                    mTTS.setVoice(v);
+//                    mTTS.setVoice(v);
                 }
             }
         }

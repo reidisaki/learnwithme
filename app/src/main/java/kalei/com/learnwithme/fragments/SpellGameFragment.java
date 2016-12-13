@@ -4,6 +4,7 @@ import com.aigestudio.wheelpicker.WheelPicker;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -162,7 +163,26 @@ public class SpellGameFragment extends GameFragment {
 
     @Override
     protected void wrongAnswer() {
+        mEnglishWord.setTextColor(Color.RED);
         mEnglishWord.setText("NOPE");
+        Animation fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+        mEnglishWord.setAnimation(fadeOut);
+        fadeOut.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(final Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(final Animation animation) {
+                mEnglishWord.setText("");
+            }
+
+            @Override
+            public void onAnimationRepeat(final Animation animation) {
+
+            }
+        });
     }
 
     @Override
