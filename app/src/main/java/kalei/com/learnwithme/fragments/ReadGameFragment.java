@@ -51,49 +51,12 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            adListener = (LearnWithMeAdListener) context;
-        } catch (ClassCastException castException) {
-            /** The activity does not implement the listener. */
-        }
-    }
-
     public static ReadGameFragment newInstance(String gameType) {
         ReadGameFragment fragment = new ReadGameFragment();
         Bundle bundle = new Bundle();
         bundle.putString(GAME_TYPE, gameType);
         fragment.setArguments(bundle);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle b) {
-        super.onCreate(b);
-
-        Handler handler = new Handler();
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                loadSounds();
-            }
-        };
-        handler.postDelayed(r, 100);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mTTS = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    mTTS.setLanguage(Locale.US);
-                }
-            }
-        });
     }
 
     @Override
@@ -207,6 +170,7 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         mRootView = super.onCreateView(inflater, container, savedInstanceState);
+        loadSounds();
         String word = mIsEnglish ? mWordsArray[mIndex] : mUnicodeArray[mIndex];
         if (word != null) {
             if (mWordTextView == null) {
