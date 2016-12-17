@@ -141,7 +141,6 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
             letterObj.setUnderlined(true);
         }
 
-        mCanContinue = true;
         mListenButton.setEnabled(mCanContinue);
         setUnderLineText();
 
@@ -398,7 +397,6 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
         mCanContinue = false;
         loadLetterMap(word);
         mWordTextView.setText(word);
-        mListenButton.setEnabled(false);
     }
 
     private void setupUnicodeLetter() {
@@ -412,7 +410,6 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
         mWordTextView.setText(mUnicodeArray[mIndex] + " ");
         Log.i(TAG, "setup word: " + mWordTextView.getText().toString() + " index: " + mIndex + " real value: " + mUnicodeArray[mIndex]);
         mCanContinue = false;
-        mListenButton.setEnabled(false);
     }
 
     public boolean answerIsCloseEnough(String answer, String theirAnswer) {
