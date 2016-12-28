@@ -210,6 +210,7 @@ public class SpellGameFragment extends GameFragment {
     public void loadNextWord() {
         mIndex++;
         mFlContainer.removeAllViews();
+        mRootView.setBackgroundColor(generateRandomColor());
         setupWord();
     }
 
