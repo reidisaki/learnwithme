@@ -53,23 +53,22 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
 
     protected String[] mWordsArray = {"one", "two", "bat", "cat", "mat", "pat", "rat", "sat", "can", "fan", "man", "pan", "ran", "tan", "cap", "map", "nap",
             "tap", "sap", "bag", "wag", "tag", "rag", "dam", "ham", "jam", "ram", "yam", "bad", "dad", "had", "mad", "jar", "tar", "dry", "my,", "all", "are",
-            "ask",
-            "mom", "and", "pad", "sad", "can", "fan", "pan", "ran", "van", "bed", "led", "red", "get", "let", "jet", "met", "net", "pet", "set", "wet", "den",
-            "hen", "men", "pen", "ten", "beg", "leg", "peg", "keg", "egg", "bit", "fit", "hit", "kit", "mit", "pit", "sit", "big", "dig", "fig", "pig", "wig",
+            "ask", "mom", "and", "pad", "sad", "can", "fan", "pan", "ran", "van", "bed", "led", "red", "get", "let", "jet", "met", "net", "pet", "set", "wet",
+            "den", "men", "pen", "ten", "beg", "leg", "peg", "keg", "egg", "bit", "fit", "hit", "kit", "mit", "pit", "sit", "big", "dig", "fig", "pig", "wig",
             "fin", "pin", "win", "bid", "did", "hid", "rid", "hip", "sip", "tip", "dip", "lip", "hop", "mop", "pop", "top", "dot", "got", "hot", "not", "pot",
             "rot", "box", "fox", "pox", "job", "mob", "rob", "sob", "bye", "bee", "see", "his", "her", "bye", "bee", "see", "cow", "how", "now", "bun", "fun",
             "run", "sun", "but", "cut", "gut", "hut", "nut", "rut", "bus", "cup", "pup", "cub", "rub", "tub", "bug", "dug", "hug", "mug", "rug", "tug", "see",
-            "she", "bar", "car", "far"};
+            "she", "bar", "car", "far", "hen"};
 
     protected String[] mKindergartenArray = {
-            "WAS", "ON", "ARE", "AS", "HURT", "CAT", "SHE", "FUN", "THE", "FIRST", "BE", "THIS", "FROM", "EGG", "HAVE", "NOT", "BUT", "ALL", "WHAT", "FOUR",
-            "THEIR", "IF", "DO", "HOW", "WHICH", "THEM", "THEN", "RAN", "SO", "OTHER", "HAS", "MORE", "HER", "TWO", "LIKE", "MAKE", "THAN", "FIRST", "BEEN",
-            "ITS", "OVER", "DID", "DOWN", "ONLY", "LONG", "BIG", "BLUE", "VERY", "LITTLE", "AFTER", "FUR", "SIR", "FLY", "FOR", "SHIRT", "HIS", "THEY", "AT",
-            "HE", "WITH", "GO", "OR", "BY", "ONE", "SAID", "HAD", "UP", "OUT", "COME", "YOUR", "WHEN", "WE", "CAN", "AN", "THERE", "YOU", "AND", "JUMP", "LOOK",
-            "EACH", "IN", "IS", "IT", "CAME", "ABOUT", "HIM", "SEE", "TIME", "COULD", "KNOW", "MANY", "SOME", "THESE", "INTO", "WOULD", "WHO", "NOW", "MADE",
-            "MY", "PEOPLE", "WAY", "MAY", "USE", "FIND", "WATER", "WORDS", "CALL", "JUST", "MOST", "WHERE", "HERE", "AM", "EAT", "GET", "FUNNY", "ATE", "GOOD",
-            "OUR", "ANY", "BLACK", "SAY", "ASK", "LET", "SIT", "BROWN", "HELP", "ME", "NOT", "SAW", "PLEASE", "WERE", "MUST", "NO", "RIDE", "PRETTY", "OLD",
-            "PUT", "STOP", "OPEN", "THANK", "TOO", "WELL", "WENT", "WASH", "YELLOW", "RED", "RUN", "TO", "NEW", "THREE"};
+            "was", "on", "are", "as", "hurt", "cat", "she", "fun", "the", "first", "be", "this", "from", "egg", "have", "not", "but", "all", "what", "four",
+            "their", "if", "do", "how", "which", "them", "then", "ran", "so", "other", "has", "more", "her", "two", "like", "make", "than", "first", "been",
+            "its", "over", "did", "down", "only", "long", "big", "blue", "very", "little", "after", "fur", "sir", "fly", "for", "shirt", "his", "they", "at",
+            "he", "with", "go", "or", "by", "one", "said", "had", "up", "out", "come", "your", "when", "we", "can", "an", "there", "you", "and", "jump", "look",
+            "each", "in", "is", "it", "came", "about", "him", "see", "time", "could", "know", "many", "some", "these", "into", "would", "who", "now", "made",
+            "my", "people", "way", "may", "use", "find", "water", "words", "call", "just", "most", "where", "here", "am", "eat", "get", "funny", "ate", "good",
+            "our", "any", "black", "say", "ask", "let", "sit", "brown", "help", "me", "not", "saw", "please", "were", "must", "no", "ride", "pretty", "old",
+            "put", "stop", "open", "thank", "too", "well", "went", "wash", "yellow", "red", "run", "to", "new", "three"};
 
     protected Button mListenButton;
     protected int mIndex = 0, mCorrectSoundId, mAwwSoundId = 0;
@@ -169,7 +168,11 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         ViewGroup viewGroup = (ViewGroup) getView();
         viewGroup.removeAllViewsInLayout();
 
-        mRootView = inflater.inflate(R.layout.fragment_game, viewGroup);
+        if (mIsReadMode) {
+            mRootView = inflater.inflate(R.layout.fragment_game, viewGroup);
+        } else {
+            mRootView = inflater.inflate(R.layout.fragment_game_spell, viewGroup);
+        }
         initViews();
     }
 
@@ -188,7 +191,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
+        super.onCreateView(inflater, container, savedInstanceState);
         if (savedInstanceState == null) {
             mRootView = inflater.inflate(setLayout(), container, false);
             randomizeWords();

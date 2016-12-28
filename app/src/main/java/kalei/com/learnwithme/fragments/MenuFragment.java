@@ -104,7 +104,7 @@ public class MenuFragment extends LearnWithMeFragment implements OnClickListener
     }
 
     private boolean isReadMode() {
-        return mReadButton.isChecked() || !mSpellButton.isChecked();
+        return mReadButton.isChecked();
     }
 
     private void toggleRadioButton(final int id) {

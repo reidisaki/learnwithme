@@ -2,6 +2,7 @@ package kalei.com.learnwithme.fragments;
 
 import com.aigestudio.wheelpicker.WheelPicker;
 
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,15 +47,25 @@ public class SpellGameFragment extends GameFragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        mRootView = super.onCreateView(inflater, container, savedInstanceState);
+        super.onCreateView(inflater, container, savedInstanceState);
+        return mRootView;
+    }
+
+//    @Override
+//    public void onConfigurationChanged(final Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        initViews();
+//    }
+
+    @Override
+    protected void initViews() {
+        super.initViews();
         mFadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
         mListenButton.setOnClickListener(this);
         mSubmitBtn = (Button) mRootView.findViewById(R.id.submit_btn);
         mSubmitBtn.setOnClickListener(this);
-
+        mRootView.setBackgroundColor(generateRandomColor());
         setupWord();
-
-        return mRootView;
     }
 
     private void initWheel() {
@@ -87,10 +98,10 @@ public class SpellGameFragment extends GameFragment {
     @Override
     public void onClick(final View v) {
         super.onClick(v);
+        Log.i("lwm", "word is: " + mCurrentWord);
         switch (v.getId()) {
             case R.id.submit_btn:
                 if (mIsEnglish) {
-                    Log.i("lwm", "word is: " + mCurrentWord);
                     //only spelling english words for now
                     if (checkSpelling()) {
                         correctAnswer();

@@ -141,14 +141,15 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
             letterObj.setUnderlined(true);
         }
 
-        mListenButton.setEnabled(mCanContinue);
         setUnderLineText();
+        mListenButton.setEnabled(mCanContinue);
 
         enableSpeakButton();
     }
 
     //sets underline text and if user can continue
     protected SpannableString setUnderLineText() {
+        mCanContinue = true;
         for (int j = 0; j < mLetterList.size(); j++) {
             Letter letter = mLetterList.get(j);
             if (!letter.isUnderlined()) {
