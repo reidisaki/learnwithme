@@ -41,7 +41,7 @@ public class MenuActivity extends LearnWithMeActivity {
 //        adView.loadAd(adOptions); // Retrieves an ad on background thread
 //
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        if (mAdView != null && !BuildConfig.DEBUG) {
+        if (mAdView != null && !BuildConfig.BUILD_TYPE.toString().equals("debug")) {
             String android_id = Secure.getString(this.getContentResolver(),
                     Secure.ANDROID_ID);
 //            AdRequest adRequest = new AdRequest.Builder().addTestDevice(android_id).build();

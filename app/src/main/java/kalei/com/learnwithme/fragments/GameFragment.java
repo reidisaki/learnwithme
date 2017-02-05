@@ -22,6 +22,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -30,6 +32,11 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
@@ -52,7 +59,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected Typeface custom_font;
 
     protected String[] mWordsArray = {"one", "two", "bat", "cat", "mat", "pat", "rat", "sat", "can", "fan", "man", "pan", "ran", "tan", "cap", "map", "nap",
-            "tap", "sap", "bag", "wag", "tag", "rag", "dam", "ham", "jam", "ram", "yam", "bad", "dad", "had", "mad", "jar", "tar", "dry", "my,", "all", "are",
+            "tap", "sap", "bag", "wag", "tag", "rag", "dam", "ham", "jam", "ram", "yam", "bad", "dad", "had", "mad", "jar", "tar", "dry", "my", "all", "are",
             "ask", "mom", "and", "pad", "sad", "can", "fan", "pan", "ran", "van", "bed", "led", "red", "get", "let", "jet", "met", "net", "pet", "set", "wet",
             "den", "men", "pen", "ten", "beg", "leg", "peg", "keg", "egg", "bit", "fit", "hit", "kit", "mit", "pit", "sit", "big", "dig", "fig", "pig", "wig",
             "fin", "pin", "win", "bid", "did", "hid", "rid", "hip", "sip", "tip", "dip", "lip", "hop", "mop", "pop", "top", "dot", "got", "hot", "not", "pot",
@@ -92,6 +99,11 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected float mPitch;
     protected boolean mIsEnglish;
     protected boolean mIsLetter;
+    protected View mCongratsView;
+
+    protected Observable<String> wordObservable;
+    protected Observer wordTextObserver;
+    private RelativeLayout mContentView;
 
     @Override
     public void onAttach(Context context) {
@@ -187,6 +199,8 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         mRightArrow.setOnClickListener(this);
         mLeftArrow.setOnClickListener(this);
         mEnglishWord = (TextView) mRootView.findViewById(R.id.english_word);
+        mCongratsView = mRootView.findViewById(R.id.fragment_congrats);
+        mContentView = (RelativeLayout) mRootView.findViewById(R.id.content_view);
     }
 
     @Override
@@ -198,12 +212,16 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
             initViews();
             mRootView.setBackgroundColor(generateRandomColor());
         }
-
         return mRootView;
     }
 
     protected abstract int setLayout();
-    protected abstract void correctAnswer();
+
+    protected void correctAnswer() {
+        mCongratsView.setVisibility(View.VISIBLE);
+        mContentView.setVisibility(View.GONE);
+    }
+
     protected abstract void wrongAnswer();
 
     protected void loadLetterMap(String s) {
@@ -222,6 +240,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
                 getPrevWord();
                 break;
             case R.id.right_arrow_img:
+
                 Log.i(TAG, "right arrow clicked");
                 loadNextWord();
                 break;
@@ -287,7 +306,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
 
     protected void showInterstitial() {
         //bypass ads for dev build
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.BUILD_TYPE.toString().equals("debug")) {
             return;
         }
         //show interstitial every 10 times

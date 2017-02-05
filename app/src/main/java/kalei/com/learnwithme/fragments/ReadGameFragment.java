@@ -1,15 +1,13 @@
 package kalei.com.learnwithme.fragments;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.RecognizerIntent;
-import android.speech.tts.TextToSpeech;
+import android.support.annotation.MainThread;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
@@ -27,8 +25,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import kalei.com.learnwithme.R;
-import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
 import kalei.com.learnwithme.models.Letter;
 import me.grantland.widget.AutofitTextView;
 
@@ -81,6 +86,7 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
         mWordTextView.setTypeface(custom_font);
         mEnglishWord = (TextView) mRootView.findViewById(R.id.english_word);
         mWordTextView.setText(mIsEnglish ? mWordsArray[mIndex] : mUnicodeArray[mIndex]);
+
         mSpeakButton = (Button) mRootView.findViewById(R.id.play_btn);
         mSpeakButton.setEnabled(false);
         mSpeakButton.setOnClickListener(this);
@@ -90,7 +96,6 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
         } else {
             mSpeakButton.setText("Next");
         }
-
         mWordTextView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(final View v, final MotionEvent event) {
@@ -210,6 +215,45 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
                 break;
             case R.id.listen_btn:
                 sayWord();
+                break;
+            case R.id.right_arrow_img:
+
+//                wordObservable = Observable.create(new ObservableOnSubscribe<String>() {
+//                    @Override
+//                    public void subscribe(final ObservableEmitter<String> e) throws Exception {
+//
+//                        e.onNext(mWordTextView.getText().toString());
+//                        e.onComplete();
+//                    }
+//                }).map(new Function<String, String>() {
+//                    @Override
+//                    public String apply(final String s) throws Exception {
+//                        return s + " this is a test";
+//                    }
+//                });
+//
+//                wordTextObserver = new Observer<String>() {
+//                    @Override
+//                    public void onSubscribe(final Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(final String value) {
+//                        Log.i("lwm", "word changed to:" + value);
+//                    }
+//
+//                    @Override
+//                    public void onError(final Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                };
+//                wordObservable.subscribe(wordTextObserver);
                 break;
         }
     }
@@ -365,6 +409,7 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
 
     @Override
     protected void correctAnswer() {
+        super.correctAnswer();
         mSound.play(mCorrectSoundId, 1, 1, 10, 0, mPitch);
         loadNextWord();
     }
@@ -397,6 +442,7 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
 
         mCanContinue = false;
         loadLetterMap(word);
+
         mWordTextView.setText(word);
     }
 

@@ -6,26 +6,45 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
+    signingConfigs {
+        config {
+            storeFile file('/Users/risaki/.android/debug.keystore')
+            keyAlias 'debug'
+            keyPassword 'android'
+            storePassword 'android'
+        }
+    }
+    compileSdkVersion 25
     buildToolsVersion "23.0.2"
-
     defaultConfig {
         applicationId "kalei.com.learnwithme"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 3
         versionName "1.0"
-
         resValue 'string', 'version_name', versionName
-
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue 'string', 'build_type', ''
+            resValue 'string', 'app_name', 'LearnWithMe'
+        }
+        qa {
+            minifyEnabled false
+            initWith debug
+            applicationIdSuffix ".qa"
+            resValue "string", 'build_type', "-qa"
+            resValue 'string', 'app_name', 'LearnWithMe-qa'
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
+            applicationIdSuffix ".debug"
+            resValue 'string', 'build_type', '-debug'
+            resValue 'string', 'app_name', 'LearnWithMe-debug'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -50,16 +69,17 @@ buildscript {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.code.gson:gson:2.3.1'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.2@aar') {
         transitive = true;
     }
     testCompile 'junit:junit:4.12'
     compile 'com.github.bumptech.glide:glide:3.6.1'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.google.android.gms:play-services-ads:9.0.2'
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'cn.aigestudio.wheelpicker:WheelPicker:1.1.2'
-//    compile 'com.google.apis:google-api-services-customsearch:v1-rev51-1.22.0'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.0'
+    //    compile 'com.google.apis:google-api-services-customsearch:v1-rev51-1.22.0'
 }

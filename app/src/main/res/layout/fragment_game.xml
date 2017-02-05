@@ -5,48 +5,60 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+    <include layout="@layout/fragment_congratulations"
+             android:id="@+id/fragment_congrats"
+             android:visibility="gone"/>
     <ImageView
             style="@style/arrow_img"
             android:layout_alignParentLeft="true"
             android:src="@drawable/left_arrow"
             android:id="@+id/left_arrow_img"/>
-
-    <me.grantland.widget.AutofitTextView
-            android:id="@+id/word_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="170sp"
-            android:gravity="center"
-            tools:text="around"
-            android:letterSpacing=".2"
-            android:singleLine="true"
-            android:layout_centerInParent="true"/>
-    <TextView android:id="@+id/english_word"
-              android:layout_above="@+id/word_txt"
-              android:visibility="gone"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerHorizontal="true"/>
     <ImageView
             android:id="@+id/right_arrow_img"
             android:layout_alignParentRight="true"
             style="@style/arrow_img"
             android:src="@drawable/right_arrow"/>
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_alignParentBottom="true"
-                  android:layout_height="150dp"
-                  android:orientation="horizontal">
-        <Button android:layout_width="wrap_content"
-                android:enabled="false"
-                android:id="@+id/play_btn"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:text="@string/speak_button_text"/>
-        <Button android:layout_width="wrap_content"
-                android:id="@+id/listen_btn"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:text="@string/listen_button_text"/>
-    </LinearLayout>
+    <RelativeLayout android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent"
+                    android:id="@+id/content_view">
 
+
+        <me.grantland.widget.AutofitTextView
+                android:id="@+id/word_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="170sp"
+                android:gravity="center"
+                tools:text="around"
+                android:letterSpacing=".2"
+                android:singleLine="true"
+                android:layout_centerInParent="true"/>
+        <TextView android:id="@+id/english_word"
+                  android:layout_above="@+id/word_txt"
+                  android:visibility="gone"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_centerHorizontal="true"/>
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="150dp"
+                      android:layout_alignParentBottom="true"
+                      android:orientation="horizontal">
+            <Button android:layout_width="wrap_content"
+                    android:enabled="false"
+                    android:id="@+id/play_btn"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    style="@style/buttons"
+                    android:text="@string/speak_button_text"/>
+            <Button android:layout_width="wrap_content"
+                    style="@style/buttons"
+
+                    android:id="@+id/listen_btn"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/listen_button_text"/>
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

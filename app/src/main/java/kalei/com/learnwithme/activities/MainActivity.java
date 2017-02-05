@@ -19,7 +19,7 @@ public class MainActivity extends LearnWithMeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.BUILD_TYPE.toString().equals("debug")) {
             startActivity();
             return;
         }
@@ -32,7 +32,7 @@ public class MainActivity extends LearnWithMeActivity {
     protected void newInterstitialAd() {
         InterstitialAd interstitialAd = new InterstitialAd(this);
 
-//        if (!BuildConfig.DEBUG) {
+//        if (!BuildConfig.BUILD_TYPE.toString().equals("debug")) {
         interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
         interstitialAd.setAdListener(new AdListener() {

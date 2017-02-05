@@ -45,9 +45,11 @@
                 android:padding="30dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                style="@style/buttons"
                 android:text="@string/speak_button_text"/>
         <Button android:layout_width="match_parent"
                 android:id="@+id/listen_btn"
+                style="@style/buttons"
                 android:layout_weight="1"
                 android:padding="30dp"
                 android:layout_height="wrap_content"

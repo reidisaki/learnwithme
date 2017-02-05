@@ -35,20 +35,25 @@
         <Button android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/three_letter_button"
+                style="@style/buttons"
                 android:text="@string/three_letter_words_label"/>
         <Button android:layout_width="match_parent"
                 android:id="@+id/kindergarten_button"
                 android:layout_height="wrap_content"
+                style="@style/buttons"
                 android:text="@string/kindergarten"/>
         <Button android:layout_width="match_parent"
                 android:id="@+id/japanese_button"
                 android:layout_height="wrap_content"
+                style="@style/buttons"
                 android:text="@string/hiragana"/>
         <Button android:layout_width="match_parent"
                 android:id="@+id/katakana_button"
+                style="@style/buttons"
                 android:layout_height="wrap_content"
                 android:text="@string/katakana"/>
         <Button android:layout_width="wrap_content"
+                style="@style/buttons"
                 android:layout_height="wrap_content"
                 android:text="@string/five_letter_words_label"/>
     </LinearLayout>

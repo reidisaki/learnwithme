@@ -27,7 +27,7 @@ public class LearnWithMeActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!BuildConfig.DEBUG) {
+        if (!BuildConfig.BUILD_TYPE.toString().equals("debug")) {
             Fabric.with(this, new Crashlytics());
         }
     }
@@ -56,7 +56,7 @@ public class LearnWithMeActivity extends FragmentActivity {
     }
 
     protected void loadInterstitial() {
-        if (!BuildConfig.DEBUG) {
+        if (!BuildConfig.BUILD_TYPE.toString().equals("debug")) {
             // Disable the next level button and load the ad.
             AdRequest adRequest = new AdRequest.Builder()
                     .setRequestAgent("android_studio:ad_template").build();
