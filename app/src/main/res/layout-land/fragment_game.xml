@@ -5,55 +5,62 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+    <include layout="@layout/fragment_congratulations"
+             android:id="@+id/fragment_congrats"
+             android:visibility="gone"/>
     <ImageView
             style="@style/arrow_img"
             android:layout_alignParentLeft="true"
             android:src="@drawable/left_arrow"
             android:id="@+id/left_arrow_img"/>
-
-    <TextView android:id="@+id/english_word"
-              android:layout_above="@+id/button_layout"
-              android:visibility="gone"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerHorizontal="true"
-              android:gravity="center"/>
-    <me.grantland.widget.AutofitTextView
-            android:id="@+id/word_txt"
-            android:layout_above="@+id/button_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:textSize="170sp"
-            android:letterSpacing=".2"
-            tools:text="hip"
-            android:singleLine="true"
-    />
     <ImageView
             style="@style/arrow_img"
             android:layout_alignParentRight="true"
             android:src="@drawable/right_arrow"
             android:id="@+id/right_arrow_img"/>
-    <LinearLayout android:layout_width="match_parent"
+    <RelativeLayout android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent"
+                    android:id="@+id/content_view">
+        <TextView android:id="@+id/english_word"
+                  android:layout_above="@+id/button_layout"
+                  android:visibility="gone"
+                  android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:layout_alignParentBottom="true"
-                  android:id="@+id/button_layout"
-                  android:orientation="horizontal">
-        <Button android:layout_width="match_parent"
-                android:id="@+id/play_btn"
-                android:padding="30dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                style="@style/buttons"
-                android:text="@string/speak_button_text"/>
-        <Button android:layout_width="match_parent"
-                android:id="@+id/listen_btn"
-                style="@style/buttons"
-                android:layout_weight="1"
-                android:padding="30dp"
-                android:layout_height="wrap_content"
-                android:text="@string/listen_button_text"/>
-    </LinearLayout>
+                  android:layout_centerHorizontal="true"
+                  android:gravity="center"/>
+        <me.grantland.widget.AutofitTextView
+                android:id="@+id/word_txt"
+                android:layout_above="@+id/button_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:textSize="170sp"
+                android:letterSpacing=".2"
+                tools:text="hip"
+                android:singleLine="true"
+        />
 
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_alignParentBottom="true"
+                      android:id="@+id/button_layout"
+                      android:orientation="horizontal">
+            <Button android:layout_width="match_parent"
+                    android:id="@+id/play_btn"
+                    android:padding="30dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    style="@style/buttons"
+                    android:text="@string/speak_button_text"/>
+            <Button android:layout_width="match_parent"
+                    android:id="@+id/listen_btn"
+                    style="@style/buttons"
+                    android:layout_weight="1"
+                    android:padding="30dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/listen_button_text"/>
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

@@ -4,11 +4,64 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <TextView android:layout_width="match_parent"
-              android:text="@string/congrats"
-              android:layout_centerInParent="true"
-              android:gravity="center"
-              android:textSize="20sp"
-              android:layout_height="match_parent"/>
+
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_1"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_2"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_3"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_4"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_5"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_6"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_7"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_8"/>-->
+    <!--<ImageView style="@style/puzzle"-->
+    <!--android:id="@+id/piece_9"/>-->
+
+    <FrameLayout android:layout_width="wrap_content"
+                 android:layout_centerInParent="true"
+
+                 android:layout_height="wrap_content">
+        <ImageView android:layout_width="340dp"
+                   android:src="@drawable/ic_launcher"
+                   android:layout_height="340dp"/>
+        <TableLayout android:layout_width="340dp"
+                     android:layout_weight="1"
+                     android:layout_height="340dp">
+
+            <TableRow android:layout_weight="1"
+                      android:layout_height="wrap_content">
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_1"/>
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_2"/>
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_3"/>
+            </TableRow>
+            <TableRow android:layout_weight="1">
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_4"/>
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_5"/>
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_6"/>
+            </TableRow>
+            <TableRow android:layout_weight="1">
+
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_7"/>
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_8"/>
+                <ImageView style="@style/puzzle"
+                           android:id="@+id/piece_9"/>
+            </TableRow>
+        </TableLayout>
+    </FrameLayout>
 
 </RelativeLayout>

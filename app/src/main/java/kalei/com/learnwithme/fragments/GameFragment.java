@@ -20,6 +20,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,7 +30,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
@@ -81,7 +88,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected int mIndex = 0, mCorrectSoundId, mAwwSoundId = 0;
     protected TextToSpeech mTTS;
     protected View mRootView;
-    protected ImageView mLeftArrow, mRightArrow;
+    protected ImageView mLeftArrow, mRightArrow, mPuzzlePiece1, mPuzzlePiece2, mPuzzlePiece3, mPuzzlePiece4, mPuzzlePiece5, mPuzzlePiece6, mPuzzlePiece7, mPuzzlePiece8, mPuzzlePiece9;
     protected static final int REQ_CODE_SPEECH_INPUT = 1234;
     protected LearnWithMeAdListener adListener;
     protected HashMap<String, String> mLetterMap;
@@ -104,6 +111,8 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected Observable<String> wordObservable;
     protected Observer wordTextObserver;
     private RelativeLayout mContentView;
+    private List<ImageView> mImageViewList;
+    private LinkedList<Integer> mImageIdLinkedList;
 
     @Override
     public void onAttach(Context context) {
@@ -201,6 +210,35 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         mEnglishWord = (TextView) mRootView.findViewById(R.id.english_word);
         mCongratsView = mRootView.findViewById(R.id.fragment_congrats);
         mContentView = (RelativeLayout) mRootView.findViewById(R.id.content_view);
+        mPuzzlePiece1 = (ImageView) mRootView.findViewById(R.id.piece_1);
+        mPuzzlePiece2 = (ImageView) mRootView.findViewById(R.id.piece_2);
+        mPuzzlePiece3 = (ImageView) mRootView.findViewById(R.id.piece_3);
+        mPuzzlePiece4 = (ImageView) mRootView.findViewById(R.id.piece_4);
+        mPuzzlePiece5 = (ImageView) mRootView.findViewById(R.id.piece_5);
+        mPuzzlePiece6 = (ImageView) mRootView.findViewById(R.id.piece_6);
+        mPuzzlePiece7 = (ImageView) mRootView.findViewById(R.id.piece_7);
+        mPuzzlePiece8 = (ImageView) mRootView.findViewById(R.id.piece_8);
+        mPuzzlePiece9 = (ImageView) mRootView.findViewById(R.id.piece_9);
+        initImageViewList();
+    }
+
+    private void initImageViewList() {
+        mImageViewList = new ArrayList<>();
+        mImageViewList.add(mPuzzlePiece1);
+        mImageViewList.add(mPuzzlePiece2);
+        mImageViewList.add(mPuzzlePiece3);
+        mImageViewList.add(mPuzzlePiece4);
+        mImageViewList.add(mPuzzlePiece5);
+        mImageViewList.add(mPuzzlePiece6);
+        mImageViewList.add(mPuzzlePiece7);
+        mImageViewList.add(mPuzzlePiece8);
+        mImageViewList.add(mPuzzlePiece9);
+        mImageIdLinkedList = new LinkedList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
+        shuffleIntegerArray();
+    }
+
+    private void shuffleIntegerArray() {
+        Collections.shuffle(mImageIdLinkedList);
     }
 
     @Override
@@ -218,8 +256,61 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected abstract int setLayout();
 
     protected void correctAnswer() {
-        mCongratsView.setVisibility(View.VISIBLE);
-        mContentView.setVisibility(View.GONE);
+        startAnimation();
+    }
+
+    private void startAnimation() {
+        Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
+        mCongratsView.startAnimation(fadeIn);
+        final Animation fadeInContentView = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
+
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mCongratsView.setVisibility(View.VISIBLE);
+                showCongratsPiece();
+
+                mContentView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mContentView.startAnimation(fadeInContentView);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        fadeInContentView.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(final Animation animation) {
+                mCongratsView.setVisibility(View.GONE);
+                mContentView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(final Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(final Animation animation) {
+
+            }
+        });
+    }
+
+    private void showCongratsPiece() {
+
+        if (mImageIdLinkedList.size() > 0) {
+            int imageId = mImageIdLinkedList.remove(0);
+            mImageViewList.get(imageId).setVisibility(View.INVISIBLE);
+        } else {
+
+            //todo: we can have it load a different background image here vs the same ones.
+            resetCongratsViewPieces();
+        }
     }
 
     protected abstract void wrongAnswer();
@@ -577,5 +668,13 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         mLetterMap.put("x", "ex");
         mLetterMap.put("y", "yu");
         mLetterMap.put("z", "za");
+    }
+
+    protected void resetCongratsViewPieces() {
+        for (ImageView im : mImageViewList) {
+            im.setVisibility(View.VISIBLE);
+        }
+        mImageIdLinkedList = new LinkedList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
+        Collections.shuffle(mImageIdLinkedList);
     }
 }
