@@ -8,12 +8,12 @@
                  android:layout_centerInParent="true"
 
                  android:layout_height="wrap_content">
-        <ImageView android:layout_width="340dp"
+        <ImageView android:layout_width="640dp"
                    android:src="@drawable/ic_launcher"
-                   android:layout_height="340dp"/>
-        <TableLayout android:layout_width="340dp"
+                   android:layout_height="640dp"/>
+        <TableLayout android:layout_width="640dp"
                      android:layout_weight="1"
-                     android:layout_height="340dp">
+                     android:layout_height="640dp">
 
             <TableRow android:layout_weight="1"
                       android:layout_height="wrap_content">
