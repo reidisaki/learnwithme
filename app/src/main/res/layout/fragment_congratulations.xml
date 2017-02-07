@@ -9,6 +9,7 @@
 
                  android:layout_height="wrap_content">
         <ImageView android:layout_width="340dp"
+                   android:id="@+id/congrats_img"
                    android:src="@drawable/disney"
                    android:layout_height="340dp"/>
         <TableLayout android:layout_width="340dp"

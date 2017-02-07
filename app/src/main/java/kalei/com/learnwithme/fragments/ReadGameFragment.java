@@ -217,7 +217,8 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
                 sayWord();
                 break;
             case R.id.right_arrow_img:
-
+                //todo: delete this later its for testing reid
+                correctAnswer();
 //                wordObservable = Observable.create(new ObservableOnSubscribe<String>() {
 //                    @Override
 //                    public void subscribe(final ObservableEmitter<String> e) throws Exception {

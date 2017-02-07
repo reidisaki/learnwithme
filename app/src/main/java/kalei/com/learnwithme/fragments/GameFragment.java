@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -85,7 +86,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected int mIndex = 0, mCorrectSoundId, mAwwSoundId = 0;
     protected TextToSpeech mTTS;
     protected View mRootView;
-    protected ImageView mLeftArrow, mRightArrow, mPuzzlePiece1, mPuzzlePiece2, mPuzzlePiece3, mPuzzlePiece4, mPuzzlePiece5, mPuzzlePiece6, mPuzzlePiece7, mPuzzlePiece8, mPuzzlePiece9;
+    protected ImageView mLeftArrow, mRightArrow, mPuzzlePiece1, mPuzzlePiece2, mPuzzlePiece3, mPuzzlePiece4, mPuzzlePiece5, mPuzzlePiece6, mPuzzlePiece7, mPuzzlePiece8, mPuzzlePiece9, mCongratsImageView;
     protected static final int REQ_CODE_SPEECH_INPUT = 1234;
     protected LearnWithMeAdListener adListener;
     protected HashMap<String, String> mLetterMap;
@@ -224,6 +225,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         mPuzzlePiece7 = (ImageView) mRootView.findViewById(R.id.piece_7);
         mPuzzlePiece8 = (ImageView) mRootView.findViewById(R.id.piece_8);
         mPuzzlePiece9 = (ImageView) mRootView.findViewById(R.id.piece_9);
+        mCongratsImageView = (ImageView) mRootView.findViewById(R.id.congrats_img);
         initImageViewList();
     }
 
@@ -305,7 +307,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
                         });
                         mCongratsView.startAnimation(fadeOut);
                     }
-                }, 5000);
+                }, 1000);
             }
 
             @Override
@@ -344,8 +346,6 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
             mVisibleImageIdList.add(imageId);
             mImageViewList.get(imageId).setVisibility(View.INVISIBLE);
         } else {
-
-            //todo: we can have it load a different background image here vs the same ones.
             resetCongratsViewPieces();
         }
     }
@@ -368,9 +368,9 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
                 getPrevWord();
                 break;
             case R.id.right_arrow_img:
-
                 Log.i(TAG, "right arrow clicked");
-                loadNextWord();
+                //todo: undo this commenting this was only for testing
+//                loadNextWord();
                 break;
         }
     }
@@ -736,13 +736,24 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         mLetterMap.put("z", "za");
     }
 
+    protected int getRandomNumber(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max - min + 1) + min;
+    }
+
     protected void resetCongratsViewPieces() {
-        //select random background image todo:
+        Drawable drawable = getResources()
+                .getDrawable(getResources().getIdentifier("congrats_" + getRandomNumber(1, 4), "drawable", getActivity().getPackageName()), null);
+
+        mCongratsImageView.setImageDrawable(drawable);
         for (ImageView im : mImageViewList) {
             im.setVisibility(View.VISIBLE);
         }
         mImageIdLinkedList = new LinkedList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
         mVisibleImageIdList.clear();
         Collections.shuffle(mImageIdLinkedList);
+
+        //show the first piece
+        showCongratsPiece();
     }
 }
