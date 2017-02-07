@@ -107,8 +107,9 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     protected Observable<String> wordObservable;
     protected Observer wordTextObserver;
     private RelativeLayout mContentView;
-    private List<ImageView> mImageViewList;
-    private LinkedList<Integer> mImageIdLinkedList;
+    private static List<ImageView> mImageViewList;
+    private static LinkedList<Integer> mImageIdLinkedList;
+    private static List<Integer> mVisibleImageIdList; //when someone rotates the screen this keeps track of what views should be hidden/visible
     private boolean mIsHiragana = true;
 
     @Override
@@ -158,7 +159,6 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
                     .build();
             mSound = new SoundPool.Builder().setAudioAttributes(audioAttrib).setMaxStreams(6).build();
         } else {
-
             mSound = new SoundPool(6, AudioManager.STREAM_MUSIC, 0);
         }
 
@@ -197,6 +197,8 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
             mRootView = inflater.inflate(R.layout.fragment_game_spell, viewGroup);
         }
         initViews();
+        //this will reset and hide all pieces the user has already hid
+        resetShowCongratsPiece();
     }
 
     protected void initViews() {
@@ -235,8 +237,6 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         mImageViewList.add(mPuzzlePiece7);
         mImageViewList.add(mPuzzlePiece8);
         mImageViewList.add(mPuzzlePiece9);
-        mImageIdLinkedList = new LinkedList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
-        shuffleIntegerArray();
     }
 
     private void shuffleIntegerArray() {
@@ -250,6 +250,9 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
             mRootView = inflater.inflate(setLayout(), container, false);
             randomizeWords();
             initViews();
+            mImageIdLinkedList = new LinkedList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
+            mVisibleImageIdList = new ArrayList<>();
+            shuffleIntegerArray();
             mRootView.setBackgroundColor(generateRandomColor());
         }
         return mRootView;
@@ -264,7 +267,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     private void startAnimation() {
         Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
         mCongratsView.startAnimation(fadeIn);
-        final Animation fadeInContentView = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
+        final Animation fadeInContentView = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in_game);
 
         fadeIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -303,10 +306,17 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         });
     }
 
-    private void showCongratsPiece() {
+    private void resetShowCongratsPiece() {
 
+        for (int i : mVisibleImageIdList) {
+            mImageViewList.get(i).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void showCongratsPiece() {
         if (mImageIdLinkedList.size() > 0) {
             int imageId = mImageIdLinkedList.remove(0);
+            mVisibleImageIdList.add(imageId);
             mImageViewList.get(imageId).setVisibility(View.INVISIBLE);
         } else {
 
@@ -702,10 +712,12 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     }
 
     protected void resetCongratsViewPieces() {
+        //select random background image todo:
         for (ImageView im : mImageViewList) {
             im.setVisibility(View.VISIBLE);
         }
         mImageIdLinkedList = new LinkedList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
+        mVisibleImageIdList.clear();
         Collections.shuffle(mImageIdLinkedList);
     }
 }
