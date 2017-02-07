@@ -12,6 +12,7 @@ import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.text.SpannableString;
@@ -280,7 +281,31 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mContentView.startAnimation(fadeInContentView);
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Animation fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+                        fadeOut.setAnimationListener(new AnimationListener() {
+                            @Override
+                            public void onAnimationStart(final Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(final Animation animation) {
+                                mContentView.startAnimation(fadeInContentView);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(final Animation animation) {
+
+                            }
+                        });
+                        mCongratsView.startAnimation(fadeOut);
+                    }
+                }, 5000);
             }
 
             @Override
