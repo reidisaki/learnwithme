@@ -9,7 +9,7 @@
 
                  android:layout_height="wrap_content">
         <ImageView android:layout_width="340dp"
-                   android:src="@drawable/ic_launcher"
+                   android:src="@drawable/disney"
                    android:layout_height="340dp"/>
         <TableLayout android:layout_width="340dp"
                      android:layout_weight="1"

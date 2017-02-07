@@ -25,7 +25,6 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,10 +39,7 @@ import java.util.Random;
 import java.util.Set;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
@@ -113,6 +109,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     private RelativeLayout mContentView;
     private List<ImageView> mImageViewList;
     private LinkedList<Integer> mImageIdLinkedList;
+    private boolean mIsHiragana = true;
 
     @Override
     public void onAttach(Context context) {
@@ -140,7 +137,12 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
                     mWordsArray = mKindergartenArray;
                     break;
                 case "hiragana":
-                    loadJapaneseArray();
+                    loadHiraganaArray();
+                    loadJapaneseMap();
+                    break;
+                case "katakana":
+                    mIsHiragana = false;
+                    loadKatakanaArray();
                     loadJapaneseMap();
                     break;
             }
@@ -470,165 +472,194 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
 
     protected void loadJapaneseMap() {
         mJapaneseLetterMap = new HashMap<>();
-        mJapaneseLetterMap.put("\u3042", "a");
-        mJapaneseLetterMap.put("\u3044", "i");
-        mJapaneseLetterMap.put("\u3046", "oo");
-        mJapaneseLetterMap.put("\u3048", "eh");
-        mJapaneseLetterMap.put("\u304a", "oh");
-        mJapaneseLetterMap.put("\u304b", "ka");
-        mJapaneseLetterMap.put("\u304c", "ga");
-        mJapaneseLetterMap.put("\u304d", "ki");
-        mJapaneseLetterMap.put("\u304e", "gi");
-        mJapaneseLetterMap.put("\u304f", "ku");
-        mJapaneseLetterMap.put("\u3050", "gu");
-        mJapaneseLetterMap.put("\u3051", "ke");
-        mJapaneseLetterMap.put("\u3052", "ge");
-        mJapaneseLetterMap.put("\u3053", "ko");
-        mJapaneseLetterMap.put("\u3054", "go");
-        mJapaneseLetterMap.put("\u3055", "sa");
-        mJapaneseLetterMap.put("\u3056", "za");
-        mJapaneseLetterMap.put("\u3057", "shi");
-        mJapaneseLetterMap.put("\u3058", "gee");
-        mJapaneseLetterMap.put("\u3059", "su");
-        mJapaneseLetterMap.put("\u305a", "zu");
-        mJapaneseLetterMap.put("\u305b", "se");
-        mJapaneseLetterMap.put("\u305c", "ze");
-        mJapaneseLetterMap.put("\u305d", "so");
-        mJapaneseLetterMap.put("\u305e", "zo");
-        mJapaneseLetterMap.put("\u305f", "ta");
-        mJapaneseLetterMap.put("\u3060", "da");
-        mJapaneseLetterMap.put("\u3061", "ti");
-        mJapaneseLetterMap.put("\u3062", "di");
-        mJapaneseLetterMap.put("\u3064", "tsu");
-        mJapaneseLetterMap.put("\u3065", "du");
-        mJapaneseLetterMap.put("\u3066", "te");
-        mJapaneseLetterMap.put("\u3067", "de");
-        mJapaneseLetterMap.put("\u3068", "to");
-        mJapaneseLetterMap.put("\u3069", "do");
-        mJapaneseLetterMap.put("\u306a", "na");
-        mJapaneseLetterMap.put("\u306b", "ni");
-        mJapaneseLetterMap.put("\u306c", "nu");
-        mJapaneseLetterMap.put("\u306d", "ne");
-        mJapaneseLetterMap.put("\u306e", "no");
-        mJapaneseLetterMap.put("\u306f", "ha");
-        mJapaneseLetterMap.put("\u3070", "ba");
-        mJapaneseLetterMap.put("\u3071", "pa");
-        mJapaneseLetterMap.put("\u3072", "hi");
-        mJapaneseLetterMap.put("\u3073", "bi");
-        mJapaneseLetterMap.put("\u3074", "pi");
-        mJapaneseLetterMap.put("\u3075", "fu");
-        mJapaneseLetterMap.put("\u3076", "bu");
-        mJapaneseLetterMap.put("\u3077", "pu");
-        mJapaneseLetterMap.put("\u3078", "he");
-        mJapaneseLetterMap.put("\u3079", "be");
-        mJapaneseLetterMap.put("\u307a", "pe");
-        mJapaneseLetterMap.put("\u307b", "ho");
-        mJapaneseLetterMap.put("\u307c", "bo");
-        mJapaneseLetterMap.put("\u307d", "po");
-        mJapaneseLetterMap.put("\u307e", "ma");
-        mJapaneseLetterMap.put("\u307f", "mi");
-        mJapaneseLetterMap.put("\u3080", "mu");
-        mJapaneseLetterMap.put("\u3081", "me");
-        mJapaneseLetterMap.put("\u3082", "mo");
-        mJapaneseLetterMap.put("\u3084", "ya");
-        mJapaneseLetterMap.put("\u3086", "yu");
-        mJapaneseLetterMap.put("\u3088", "yo");
-        mJapaneseLetterMap.put("\u3089", "ra");
-        mJapaneseLetterMap.put("\u308a", "ri");
-        mJapaneseLetterMap.put("\u308b", "ru");
-        mJapaneseLetterMap.put("\u308c", "re");
-        mJapaneseLetterMap.put("\u308d", "ro");
-        mJapaneseLetterMap.put("\u308f", "wa");
-        mJapaneseLetterMap.put("\u3090", "wi");
-        mJapaneseLetterMap.put("\u3091", "we");
-        mJapaneseLetterMap.put("\u3092", "wo");
-        mJapaneseLetterMap.put("\u3093", "n");
-        mJapaneseLetterMap.put("\u3094", "vu");
+        if (mIsHiragana) {
+            mJapaneseLetterMap.put("\u3042", "a");
+            mJapaneseLetterMap.put("\u3044", "i");
+            mJapaneseLetterMap.put("\u3046", "oo");
+            mJapaneseLetterMap.put("\u3048", "eh");
+            mJapaneseLetterMap.put("\u304a", "oh");
+            mJapaneseLetterMap.put("\u304b", "ka");
+            mJapaneseLetterMap.put("\u304c", "ga");
+            mJapaneseLetterMap.put("\u304d", "ki");
+            mJapaneseLetterMap.put("\u304e", "gi");
+            mJapaneseLetterMap.put("\u304f", "ku");
+            mJapaneseLetterMap.put("\u3050", "gu");
+            mJapaneseLetterMap.put("\u3051", "ke");
+            mJapaneseLetterMap.put("\u3052", "ge");
+            mJapaneseLetterMap.put("\u3053", "ko");
+            mJapaneseLetterMap.put("\u3054", "go");
+            mJapaneseLetterMap.put("\u3055", "sa");
+            mJapaneseLetterMap.put("\u3056", "za");
+            mJapaneseLetterMap.put("\u3057", "shi");
+            mJapaneseLetterMap.put("\u3058", "gee");
+            mJapaneseLetterMap.put("\u3059", "su");
+            mJapaneseLetterMap.put("\u305a", "zu");
+            mJapaneseLetterMap.put("\u305b", "se");
+            mJapaneseLetterMap.put("\u305c", "ze");
+            mJapaneseLetterMap.put("\u305d", "so");
+            mJapaneseLetterMap.put("\u305e", "zo");
+            mJapaneseLetterMap.put("\u305f", "ta");
+            mJapaneseLetterMap.put("\u3060", "da");
+            mJapaneseLetterMap.put("\u3061", "ti");
+            mJapaneseLetterMap.put("\u3062", "di");
+            mJapaneseLetterMap.put("\u3064", "tsu");
+            mJapaneseLetterMap.put("\u3065", "du");
+            mJapaneseLetterMap.put("\u3066", "te");
+            mJapaneseLetterMap.put("\u3067", "de");
+            mJapaneseLetterMap.put("\u3068", "to");
+            mJapaneseLetterMap.put("\u3069", "do");
+            mJapaneseLetterMap.put("\u306a", "na");
+            mJapaneseLetterMap.put("\u306b", "ni");
+            mJapaneseLetterMap.put("\u306c", "nu");
+            mJapaneseLetterMap.put("\u306d", "ne");
+            mJapaneseLetterMap.put("\u306e", "no");
+            mJapaneseLetterMap.put("\u306f", "ha");
+            mJapaneseLetterMap.put("\u3070", "ba");
+            mJapaneseLetterMap.put("\u3071", "pa");
+            mJapaneseLetterMap.put("\u3072", "hi");
+            mJapaneseLetterMap.put("\u3073", "bi");
+            mJapaneseLetterMap.put("\u3074", "pi");
+            mJapaneseLetterMap.put("\u3075", "fu");
+            mJapaneseLetterMap.put("\u3076", "bu");
+            mJapaneseLetterMap.put("\u3077", "pu");
+            mJapaneseLetterMap.put("\u3078", "he");
+            mJapaneseLetterMap.put("\u3079", "be");
+            mJapaneseLetterMap.put("\u307a", "pe");
+            mJapaneseLetterMap.put("\u307b", "ho");
+            mJapaneseLetterMap.put("\u307c", "bo");
+            mJapaneseLetterMap.put("\u307d", "po");
+            mJapaneseLetterMap.put("\u307e", "ma");
+            mJapaneseLetterMap.put("\u307f", "mi");
+            mJapaneseLetterMap.put("\u3080", "mu");
+            mJapaneseLetterMap.put("\u3081", "me");
+            mJapaneseLetterMap.put("\u3082", "mo");
+            mJapaneseLetterMap.put("\u3084", "ya");
+            mJapaneseLetterMap.put("\u3086", "yu");
+            mJapaneseLetterMap.put("\u3088", "yo");
+            mJapaneseLetterMap.put("\u3089", "ra");
+            mJapaneseLetterMap.put("\u308a", "ri");
+            mJapaneseLetterMap.put("\u308b", "ru");
+            mJapaneseLetterMap.put("\u308c", "re");
+            mJapaneseLetterMap.put("\u308d", "ro");
+            mJapaneseLetterMap.put("\u308f", "wa");
+            mJapaneseLetterMap.put("\u3090", "wi");
+            mJapaneseLetterMap.put("\u3091", "we");
+            mJapaneseLetterMap.put("\u3092", "wo");
+            mJapaneseLetterMap.put("\u3093", "n");
+            mJapaneseLetterMap.put("\u3094", "vu");
+        } else {
+            //katakana
 
-//        mJapaneseLetterMap = new HashMap<>();
-//        mJapaneseLetterMap.put("a", "\u3042");
-//        mJapaneseLetterMap.put("i", "\u3044");
-//        mJapaneseLetterMap.put("oo", "\u3046");
-//        mJapaneseLetterMap.put("eh", "\u3048");
-//        mJapaneseLetterMap.put("oh", "\u304a");
-//        mJapaneseLetterMap.put("ka", "\u304b");
-//        mJapaneseLetterMap.put("ga", "\u304c");
-//        mJapaneseLetterMap.put("ki", "\u304d");
-//        mJapaneseLetterMap.put("gi", "\u304e");
-//        mJapaneseLetterMap.put("ku", "\u304f");
-//        mJapaneseLetterMap.put("gu", "\u3050");
-//        mJapaneseLetterMap.put("ke", "\u3051");
-//        mJapaneseLetterMap.put("ge", "\u3052");
-//        mJapaneseLetterMap.put("ko", "\u3053");
-//        mJapaneseLetterMap.put("go", "\u3054");
-//        mJapaneseLetterMap.put("sa", "\u3055");
-//        mJapaneseLetterMap.put("za", "\u3056");
-//        mJapaneseLetterMap.put("shi", "\u3057");
-//        mJapaneseLetterMap.put("gee", "\u3058");
-//        mJapaneseLetterMap.put("su", "\u3059");
-//        mJapaneseLetterMap.put("zu", "\u305a");
-//        mJapaneseLetterMap.put("se", "\u305b");
-//        mJapaneseLetterMap.put("ze", "\u305c");
-//        mJapaneseLetterMap.put("so", "\u305d");
-//        mJapaneseLetterMap.put("zo", "\u305e");
-//        mJapaneseLetterMap.put("ta", "\u305f");
-//        mJapaneseLetterMap.put("da", "\u3060");
-//        mJapaneseLetterMap.put("ti", "\u3061");
-//        mJapaneseLetterMap.put("di", "\u3062");
-//        mJapaneseLetterMap.put("tu", "\u3064");
-//        mJapaneseLetterMap.put("du", "\u3065");
-//        mJapaneseLetterMap.put("te", "\u3066");
-//        mJapaneseLetterMap.put("de", "\u3067");
-//        mJapaneseLetterMap.put("to", "\u3068");
-//        mJapaneseLetterMap.put("do", "\u3069");
-//        mJapaneseLetterMap.put("na", "\u306a");
-//        mJapaneseLetterMap.put("ni", "\u306b");
-//        mJapaneseLetterMap.put("nu", "\u306c");
-//        mJapaneseLetterMap.put("ne", "\u306d");
-//        mJapaneseLetterMap.put("no", "\u306e");
-//        mJapaneseLetterMap.put("ha", "\u306f");
-//        mJapaneseLetterMap.put("ba", "\u3070");
-//        mJapaneseLetterMap.put("pa", "\u3071");
-//        mJapaneseLetterMap.put("hi", "\u3072");
-//        mJapaneseLetterMap.put("bi", "\u3073");
-//        mJapaneseLetterMap.put("pi", "\u3074");
-//        mJapaneseLetterMap.put("hu", "\u3075");
-//        mJapaneseLetterMap.put("bu", "\u3076");
-//        mJapaneseLetterMap.put("pu", "\u3077");
-//        mJapaneseLetterMap.put("he", "\u3078");
-//        mJapaneseLetterMap.put("be", "\u3079");
-//        mJapaneseLetterMap.put("pe", "\u307a");
-//        mJapaneseLetterMap.put("ho", "\u307b");
-//        mJapaneseLetterMap.put("bo", "\u307c");
-//        mJapaneseLetterMap.put("po", "\u307d");
-//        mJapaneseLetterMap.put("ma", "\u307e");
-//        mJapaneseLetterMap.put("mi", "\u307f");
-//        mJapaneseLetterMap.put("mu", "\u3080");
-//        mJapaneseLetterMap.put("me", "\u3081");
-//        mJapaneseLetterMap.put("mo", "\u3082");
-//        mJapaneseLetterMap.put("ya", "\u3084");
-//        mJapaneseLetterMap.put("yu", "\u3086");
-//        mJapaneseLetterMap.put("yo", "\u3088");
-//        mJapaneseLetterMap.put("ra", "\u3089");
-//        mJapaneseLetterMap.put("ri", "\u308a");
-//        mJapaneseLetterMap.put("ru", "\u308b");
-//        mJapaneseLetterMap.put("re", "\u308c");
-//        mJapaneseLetterMap.put("ro", "\u308d");
-//        mJapaneseLetterMap.put("wa", "\u308f");
-//        mJapaneseLetterMap.put("wi", "\u3090");
-//        mJapaneseLetterMap.put("we", "\u3091");
-//        mJapaneseLetterMap.put("wo", "\u3091");
-//        mJapaneseLetterMap.put("n", "\u3093");
-//        mJapaneseLetterMap.put("vu", "\u3094");
+            mJapaneseLetterMap.put("\u30A1", "a");
+            mJapaneseLetterMap.put("\u30A2", "a");
+            mJapaneseLetterMap.put("\u30A3", "i");
+            mJapaneseLetterMap.put("\u30A4", "i");
+            mJapaneseLetterMap.put("\u30A5", "oo");
+            mJapaneseLetterMap.put("\u30A6", "oo");
+            mJapaneseLetterMap.put("\u30A7", "eh");
+            mJapaneseLetterMap.put("\u30A8", "eh");
+            mJapaneseLetterMap.put("\u30A9", "oh");
+            mJapaneseLetterMap.put("\u30AA", "oh");
+            mJapaneseLetterMap.put("\u30AB", "ka");
+            mJapaneseLetterMap.put("\u30AC", "ga");
+            mJapaneseLetterMap.put("\u30AD", "ki");
+            mJapaneseLetterMap.put("\u30AE", "gi");
+            mJapaneseLetterMap.put("\u30AF", "ku");
+            mJapaneseLetterMap.put("\u30B0", "gu");
+            mJapaneseLetterMap.put("\u30B1", "ke");
+            mJapaneseLetterMap.put("\u30B2", "ge");
+            mJapaneseLetterMap.put("\u30B3", "ko");
+            mJapaneseLetterMap.put("\u30B4", "go");
+            mJapaneseLetterMap.put("\u30B5", "sa");
+            mJapaneseLetterMap.put("\u30B6", "za");
+            mJapaneseLetterMap.put("\u30B7", "si");
+            mJapaneseLetterMap.put("\u30B8", "zi");
+            mJapaneseLetterMap.put("\u30B9", "su");
+            mJapaneseLetterMap.put("\u30BA", "zu");
+            mJapaneseLetterMap.put("\u30BB", "se");
+            mJapaneseLetterMap.put("\u30BC", "ze");
+            mJapaneseLetterMap.put("\u30BD", "so");
+            mJapaneseLetterMap.put("\u30BE", "zo");
+            mJapaneseLetterMap.put("\u30BF", "ta");
+            mJapaneseLetterMap.put("\u30C0", "da");
+            mJapaneseLetterMap.put("\u30C1", "ti");
+            mJapaneseLetterMap.put("\u30C2", "di");
+            mJapaneseLetterMap.put("\u30C3", "tu");
+            mJapaneseLetterMap.put("\u30C4", "tu");
+            mJapaneseLetterMap.put("\u30C5", "du");
+            mJapaneseLetterMap.put("\u30C6", "te");
+            mJapaneseLetterMap.put("\u30C7", "de");
+            mJapaneseLetterMap.put("\u30C8", "to");
+            mJapaneseLetterMap.put("\u30C9", "do");
+            mJapaneseLetterMap.put("\u30CA", "na");
+            mJapaneseLetterMap.put("\u30CB", "ni");
+            mJapaneseLetterMap.put("\u30CC", "nu");
+            mJapaneseLetterMap.put("\u30CD", "ne");
+            mJapaneseLetterMap.put("\u30CE", "no");
+            mJapaneseLetterMap.put("\u30CF", "ha");
+            mJapaneseLetterMap.put("\u30D0", "ba");
+            mJapaneseLetterMap.put("\u30D1", "pa");
+            mJapaneseLetterMap.put("\u30D2", "hi");
+            mJapaneseLetterMap.put("\u30D3", "bi");
+            mJapaneseLetterMap.put("\u30D4", "pi");
+            mJapaneseLetterMap.put("\u30D5", "hu");
+            mJapaneseLetterMap.put("\u30D6", "bu");
+            mJapaneseLetterMap.put("\u30D7", "pu");
+            mJapaneseLetterMap.put("\u30D8", "he");
+            mJapaneseLetterMap.put("\u30D9", "be");
+            mJapaneseLetterMap.put("\u30DA", "pe");
+            mJapaneseLetterMap.put("\u30DB", "ho");
+            mJapaneseLetterMap.put("\u30DC", "bo");
+            mJapaneseLetterMap.put("\u30DD", "po");
+            mJapaneseLetterMap.put("\u30DE", "ma");
+            mJapaneseLetterMap.put("\u30DF", "mi");
+            mJapaneseLetterMap.put("\u30E0", "mu");
+            mJapaneseLetterMap.put("\u30E1", "me");
+            mJapaneseLetterMap.put("\u30E2", "mo");
+            mJapaneseLetterMap.put("\u30E3", "ya");
+            mJapaneseLetterMap.put("\u30E4", "ya");
+            mJapaneseLetterMap.put("\u30E5", "yu");
+            mJapaneseLetterMap.put("\u30E6", "yu");
+            mJapaneseLetterMap.put("\u30E7", "yo");
+            mJapaneseLetterMap.put("\u30E8", "yo");
+            mJapaneseLetterMap.put("\u30E9", "ra");
+            mJapaneseLetterMap.put("\u30EA", "ri");
+            mJapaneseLetterMap.put("\u30EB", "ru");
+            mJapaneseLetterMap.put("\u30EC", "re");
+            mJapaneseLetterMap.put("\u30ED", "ro");
+            mJapaneseLetterMap.put("\u30EE", "wa");
+            mJapaneseLetterMap.put("\u30EF", "wa");
+            mJapaneseLetterMap.put("\u30F0", "wi");
+            mJapaneseLetterMap.put("\u30F1", "we");
+            mJapaneseLetterMap.put("\u30F2", "wo");
+            mJapaneseLetterMap.put("\u30F3", "n");
+            mJapaneseLetterMap.put("\u30F4", "vu");
+            mJapaneseLetterMap.put("\u30F5", "ka");
+            mJapaneseLetterMap.put("\u30F6", "ke");
+            mJapaneseLetterMap.put("\u30F7", "va");
+            mJapaneseLetterMap.put("\u30F8", "vi");
+            mJapaneseLetterMap.put("\u30F9", "ve");
+            mJapaneseLetterMap.put("\u30FA", "vo");
+        }
     }
 
-    protected void loadJapaneseArray() {
+    protected void loadHiraganaArray() {
         mUnicodeArray = new String[]{"\u3042", "\u3044", "\u3046", "\u3048", "\u304a", "\u304b", "\u304c", "\u304d", "\u304e", "\u304f", "\u3050",
                 "\u3051", "\u3052", "\u3053", "\u3054", "\u3055", "\u3056", "\u3057", "\u3058", "\u3059", "\u305a", "\u305b", "\u305c", "\u305d",
                 "\u305e", "\u305f", "\u3060", "\u3061", "\u3062", "\u3064", "\u3065", "\u3066", "\u3067", "\u3068", "\u3069", "\u306a", "\u306b",
                 "\u306c", "\u306d", "\u306e", "\u306f", "\u3070", "\u3071", "\u3072", "\u3073", "\u3074", "\u3075", "\u3076", "\u3077", "\u3078",
                 "\u3079", "\u307a", "\u307b", "\u307c", "\u307d", "\u307e", "\u307f", "\u3080", "\u3081", "\u3082", "\u3084", "\u3086", "\u3088",
                 "\u3089", "\u308a", "\u308b", "\u308c", "\u308d", "\u308f", "\u3090", "\u3091", "\u3091", "\u3093", "\u3094"};
+    }
+
+    protected void loadKatakanaArray() {
+        mUnicodeArray = new String[]{"\u30A1", "\u30A2", "\u30A3", "\u30A4", "\u30A5", "\u30A6", "\u30A7", "\u30A8", "\u30A9", "\u30AA", "\u30AB",
+                "\u30AC", "\u30AD", "\u30AE", "\u30AF", "\u30B0", "\u30B1", "\u30B2", "\u30B3", "\u30B4", "\u30B5", "\u30B6", "\u30B7", "\u30B8", "\u30B9",
+                "\u30BA", "\u30BB", "\u30BC", "\u30BD", "\u30BE", "\u30BF", "\u30C0", "\u30C1", "\u30C2", "\u30C3", "\u30C4", "\u30C5", "\u30C6", "\u30C7",
+                "\u30C8", "\u30C9", "\u30CA", "\u30CB", "\u30CC", "\u30CD", "\u30CE", "\u30CF", "\u30D0", "\u30D1", "\u30D2", "\u30D3", "\u30D4", "\u30D5",
+                "\u30D6", "\u30D7", "\u30D8", "\u30D9", "\u30DA", "\u30DB", "\u30DC", "\u30DD", "\u30DE", "\u30DF", "\u30E0", "\u30E1", "\u30E2", "\u30E3",
+                "\u30E4", "\u30E5", "\u30E6", "\u30E7", "\u30E8", "\u30E9", "\u30EA", "\u30EB", "\u30EC", "\u30ED", "\u30EE", "\u30EF", "\u30F0", "\u30F1",
+                "\u30F2", "\u30F3", "\u30F4", "\u30F5", "\u30F6", "\u30F7", "\u30F8", "\u30F9", "\u30FA"};
     }
 
     @Override
