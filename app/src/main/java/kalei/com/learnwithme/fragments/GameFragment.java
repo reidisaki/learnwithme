@@ -108,7 +108,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
 
     protected Observable<String> wordObservable;
     protected Observer wordTextObserver;
-    private RelativeLayout mContentView;
+    protected RelativeLayout mContentView;
     private static List<ImageView> mImageViewList;
     private static LinkedList<Integer> mImageIdLinkedList;
     private static List<Integer> mVisibleImageIdList; //when someone rotates the screen this keeps track of what views should be hidden/visible
@@ -298,6 +298,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
                             @Override
                             public void onAnimationEnd(final Animation animation) {
                                 mContentView.startAnimation(fadeInContentView);
+                                loadNextWord();
                             }
 
                             @Override
@@ -333,14 +334,14 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
         });
     }
 
-    private void resetShowCongratsPiece() {
+    protected void resetShowCongratsPiece() {
 
         for (int i : mVisibleImageIdList) {
             mImageViewList.get(i).setVisibility(View.INVISIBLE);
         }
     }
 
-    private void showCongratsPiece() {
+    protected void showCongratsPiece() {
         if (mImageIdLinkedList.size() > 0) {
             int imageId = mImageIdLinkedList.remove(0);
             mVisibleImageIdList.add(imageId);
@@ -438,7 +439,7 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
             return;
         }
         //show interstitial every 10 times
-        if (mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
+        if (mIndex != 0 && mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
             adListener.createAndShowAd();
         }
         if (mIndex >= mWordsArray.length) {

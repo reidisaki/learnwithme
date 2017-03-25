@@ -154,7 +154,8 @@ public class SpellGameFragment extends GameFragment {
 
                     @Override
                     public void onAnimationEnd(final Animation animation) {
-                        loadNextWord();
+                        mContentView.setVisibility(View.GONE);
+                        SpellGameFragment.super.correctAnswer();
                     }
 
                     @Override

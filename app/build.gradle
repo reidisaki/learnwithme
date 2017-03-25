@@ -20,8 +20,8 @@ android {
         applicationId "kalei.com.learnwithme"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 3
-        versionName "1.0"
+        versionCode 1
+        versionName "1.0.0"
         resValue 'string', 'version_name', versionName
     }
     buildTypes {

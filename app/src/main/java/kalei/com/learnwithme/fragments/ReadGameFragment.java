@@ -33,6 +33,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.models.Letter;
 import me.grantland.widget.AutofitTextView;
@@ -217,8 +218,10 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
                 sayWord();
                 break;
             case R.id.right_arrow_img:
-                //todo: delete this later its for testing reid
-                correctAnswer();
+
+                if (BuildConfig.DEBUG) {
+                    loadNextWord();
+                }
 //                wordObservable = Observable.create(new ObservableOnSubscribe<String>() {
 //                    @Override
 //                    public void subscribe(final ObservableEmitter<String> e) throws Exception {
@@ -412,7 +415,6 @@ public class ReadGameFragment extends GameFragment implements OnClickListener, O
     protected void correctAnswer() {
         super.correctAnswer();
         mSound.play(mCorrectSoundId, 1, 1, 10, 0, mPitch);
-        loadNextWord();
     }
 
     @Override

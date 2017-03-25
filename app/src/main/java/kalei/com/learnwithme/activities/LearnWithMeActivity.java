@@ -21,13 +21,13 @@ public class LearnWithMeActivity extends FragmentActivity {
     protected InterstitialAd mInterstitialAd;
 
     public interface LearnWithMeAdListener {
-        public void createAndShowAd();
+        void createAndShowAd();
     }
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!BuildConfig.BUILD_TYPE.toString().equals("debug")) {
+        if (BuildConfig.BUILD_TYPE.toString().equals("release")) {
             Fabric.with(this, new Crashlytics());
         }
     }

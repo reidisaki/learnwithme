@@ -25,6 +25,7 @@ public class MenuActivity extends LearnWithMeActivity {
         setContentView(R.layout.activity_menu);
         mMenuFragment = MenuFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mMenuFragment).commit();
+
     }
 
     @Override
