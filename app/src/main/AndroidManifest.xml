@@ -11,6 +11,7 @@
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
+            android:name=".LearnWithMeApplication"
             android:theme="@style/AppTheme">
 
         <!-- This meta-data tag is required to use Google Play Services. -->
@@ -45,6 +46,10 @@
         <meta-data
                 android:name="io.fabric.ApiKey"
                 android:value="c972bfa76ea337247175a6cc36112e65a8385cd4"/>
+        <activity
+                android:name="com.flurry.android.FlurryFullscreenTakeoverActivity"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+
     </application>
 
 </manifest>

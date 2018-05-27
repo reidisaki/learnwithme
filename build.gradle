@@ -12,12 +12,10 @@ buildscript {
     }
 }
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+repositories {
+    jcenter()
 }
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+//
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}
