@@ -1,15 +1,9 @@
 package kalei.com.learnwithme.activities;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import android.os.Bundle;
-import android.provider.Settings.Secure;
 
-import kalei.com.learnwithme.BuildConfig;
 import kalei.com.learnwithme.R;
 import kalei.com.learnwithme.activities.LearnWithMeActivity.LearnWithMeAdListener;
-import kalei.com.learnwithme.fragments.GameFragment;
 import kalei.com.learnwithme.fragments.MenuFragment;
 import kalei.com.learnwithme.fragments.ReadGameFragment;
 import kalei.com.learnwithme.fragments.SpellGameFragment;
@@ -39,7 +33,7 @@ public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdLi
                 getSupportFragmentManager().beginTransaction().replace(R.id.container_frame, mSpellGameFragment).commit();
             }
         }
-        loadAds();
+//        loadAds();
     }
 
     @Override
@@ -54,15 +48,15 @@ public class GameActivity extends LearnWithMeActivity implements LearnWithMeAdLi
 //        // Optional: Set ad targeting options here.
 //        adView.loadAd(adOptions); // Retrieves an ad on background thread
 //
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        if (mAdView != null && !BuildConfig.BUILD_TYPE.toString().equals("debug")) {
-            String android_id = Secure.getString(this.getContentResolver(),
-                    Secure.ANDROID_ID);
-//            AdRequest adRequest = new AdRequest.Builder().addTestDevice("1227AC999E49F1FE325D0EA5E2E4E604").build();
-            AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
-
-            mAdView.loadAd(adRequest);
-        }
+//        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        if (mAdView != null && !BuildConfig.BUILD_TYPE.toString().equals("debug")) {
+//            String android_id = Secure.getString(this.getContentResolver(),
+//                    Secure.ANDROID_ID);
+////            AdRequest adRequest = new AdRequest.Builder().addTestDevice("1227AC999E49F1FE325D0EA5E2E4E604").build();
+//            AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+//
+//            mAdView.loadAd(adRequest);
+//        }
     }
 
     @Override

@@ -25,8 +25,9 @@ public class MainActivity extends LearnWithMeActivity {
         }
         // Create the next level button, which tries to show an interstitial when clicked.
         // Create the InterstitialAd and set the adUnitId (defined in values/strings.xml).
-        newInterstitialAd();
-        loadInterstitial();
+//        newInterstitialAd();
+//        loadInterstitial();
+        startActivity();
     }
 
     protected void newInterstitialAd() {

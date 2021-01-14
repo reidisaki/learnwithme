@@ -117,11 +117,11 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            adListener = (LearnWithMeAdListener) context;
-        } catch (ClassCastException castException) {
-            /** The activity does not implement the listener. */
-        }
+//        try {
+//            adListener = (LearnWithMeAdListener) context;
+//        } catch (ClassCastException castException) {
+//            /** The activity does not implement the listener. */
+//        }
     }
 
     @Override
@@ -439,9 +439,9 @@ public abstract class GameFragment extends LearnWithMeFragment implements OnClic
             return;
         }
         //show interstitial every 10 times
-        if (mIndex != 0 && mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
-            adListener.createAndShowAd();
-        }
+//        if (mIndex != 0 && mIndex % NUM_TIMES_BEFORE_INTERSTITIAL_SHOWN == 0) {
+//            adListener.createAndShowAd();
+//        }
         if (mIndex >= mWordsArray.length) {
             mIndex = 0;
         }
